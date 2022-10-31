@@ -9,7 +9,7 @@ from sklearn.metrics import classification_report
 
 
 print("Loading dataset")
-data = pd.read_csv("data/data.csv")
+data = pd.read_csv("data/ex1-2.csv")
 print(data)
 x = data.iloc[:, :-1].values
 y = data.iloc[:, -1].values
