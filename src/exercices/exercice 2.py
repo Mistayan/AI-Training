@@ -1,7 +1,5 @@
-import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
-import sklearn
+import numpy as np
 from sklearn.datasets import load_digits
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
@@ -22,7 +20,6 @@ plt.show()
 print("Diviser data en jeu d'entrainement et de tests")
 x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
 
-
 print("Créer le Model KNN")
 knn = KNeighborsClassifier(n_neighbors=5)
 knn.fit(x_train, y_train)
@@ -30,7 +27,6 @@ knn.fit(x_train, y_train)
 print("Afficher le taux de précision")
 score = knn.score(x_test, y_test)
 print(f"Score : {score}")
-
 
 print("Teste les différentes valeurs pour l'hyperparamètre k de 1 à 20")
 neighbors = np.arange(1, 21)
