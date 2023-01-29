@@ -1,18 +1,15 @@
 # Import les libs nécessaires (sklearn ...)
-import random
 
-from pandas import array
-
-import pyscopx
 import math
-import time
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, plot_confusion_matrix
+from pandas import array
 from sklearn.metrics import classification_report
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import confusion_matrix, plot_confusion_matrix
+from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
+
+import pyscopx
 
 # Créer la variable camera pour récupérer les images
 # 'PrenomNOM' A REMPLACER PAR VOTRE IDENTIFIANT (ex: JulienARNE)
@@ -25,13 +22,14 @@ camera = pyscopx.Camera(cameraId='CamRD63',
 L = camera.lirePixelSaturation
 force_training = False
 
+
 def grad(L, x, y):
     """
     Calcul le gradient de l'information (luminosité, RGB, contrast, ...) autour du point x,y.
      L est la fonction qui renvoie une information sur un point (x, y) d'une image
      """
-    return math.sqrt((L(x + 1, y) - L(x - 1, y))**2 +
-                     (L(x, y + 1) - L(x, y - 1))**2)
+    return math.sqrt((L(x + 1, y) - L(x - 1, y)) ** 2 +
+                     (L(x, y + 1) - L(x, y - 1)) ** 2)
 
 
 def characterize(L):
@@ -53,7 +51,7 @@ def characterize(L):
     _vari = 0
     for x in range(1, largeur - 1):
         for y in range(1, hauteur - 1):
-            _vari = (grad(L, x, y) - grad_mean)**2
+            _vari = (grad(L, x, y) - grad_mean) ** 2
     vari_mean = _vari / total_size
     print(f"variance carrée du gradiant : {_vari / total_size}")
 
@@ -113,7 +111,6 @@ print(f"Predictions on dataset : {y_pred}")
 print(f"Confusion Matrice :\n{confusion_matrix(y_test, y_pred)}")
 print(classification_report(y_test, y_pred))
 plot_confusion_matrix("estimator", y_pred, y_test)
-
 
 # On génère une couleur par obstacle
 my_obstacles = {
