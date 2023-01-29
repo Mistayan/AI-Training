@@ -7,14 +7,15 @@ Elle permet de manipuler une camera pyscopx pour récupérer et modifier les ima
 """
 __version__ = '0.9.2'
 
-import paho.mqtt.client as mqtt
-import io
 import base64
-import time
-from datetime import datetime
-from PIL import Image
+import io
 import random
 import sys
+import time
+from datetime import datetime
+
+import paho.mqtt.client as mqtt
+from PIL import Image
 
 
 def _onConnect(client, camera, flags, rc):
