@@ -28,17 +28,22 @@ def map_distances(_cities: list[tuple[str, int, int]], visited=None):
     return _distances
 
 
-def shortest_path(_distances_grid):
-    print(f"Evaluating shortest paths possible  on {_distances_grid}")
+def shortest_path(possible_cities) -> Tuple[List[Tuple[str, int, int]], float]:
+    """
+        
+    :param possible_cities: a n*n grid containing the board distances between entities
+    :return: the shortest path possible, with it's distance 
+    """
+    print(f"Evaluating shortest paths possible  on {possible_cities}")
     best_path = None
     best_dist = float("inf")
-    __size = len(_distances_grid)
+    __size = len(possible_cities)
     print(f"Grid of size {__size}**2")
     for path in itertools.permutations(range(__size)):
         dist = 0
         for i in range(__size - 1):
-            dist += _distances_grid[path[i]][path[i + 1]]
-        dist += _distances_grid[path[-1]][path[0]]
+            dist += possible_cities[path[i]][path[i + 1]]
+        dist += possible_cities[path[-1]][path[0]]
         if (best_dist - 0.33) > dist > 0:
             best_path = path
             best_dist = dist
@@ -47,9 +52,11 @@ def shortest_path(_distances_grid):
 
 def explore(city: str, remaining_cities: List[str], path: List = None) -> Tuple[Tuple[str]]:
     """
+    evaluate all possible paths in 'remaining cities', starting from 'city'.
+
     :param city: city from which we desire to start
     :param remaining_cities: list of unexplored cities
-    :param path: the current path's target
+    :param path: the current target path... ?
     :return: a 2D array containing all the possible paths, starting from 'city'
     """
     first = remaining_cities.pop(remaining_cities.index(city))
