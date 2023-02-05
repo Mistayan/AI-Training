@@ -31,13 +31,13 @@ class RunnerAgent(pytactx.Agent):
     def __next_action(self) -> str:
         """ Methode à mémoire.
         Renvoi la prochaine action à effectuer dans la liste self.path"""
-        print("Next Action")
+        print(f"Next Action, based on {self._path}")
         if not hasattr(self, '_path_iter'):
             self._path_iter = iter(self._path)
         try:
             _next = next(self._path_iter)
-            _next = str(_next if isinstance(_next, int) else _next[0] if isinstance(_next, tuple) else None)
-            if _next not in self.__visited:
+            _next = str(_next if isinstance(_next, int) else _next[0] if isinstance(_next, tuple) else _next)
+            if _next and _next not in self.__visited:
                 print("Next Target : ", _next)
                 return _next
         except StopIteration:
@@ -70,5 +70,7 @@ class RunnerAgent(pytactx.Agent):
 
 
 if __name__ == '__main__':
-    agent = RunnerAgent("Dummy-Runner")
+    import random
+
+    agent = RunnerAgent(f"Dummy-Runner {random.randint(0, 42)}")
     agent.go()
