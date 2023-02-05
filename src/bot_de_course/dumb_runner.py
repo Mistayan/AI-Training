@@ -21,7 +21,7 @@ class RunnerAgent(pytactx.Agent):
                          prompt=False,
                          verbose=False)
         self._target: str = None
-        self._path: list[tuple[str, int, int]] = []
+        self.__path: list[tuple[str, int, int]] = []
 
         self.__visited: list[str] = []
         self.__last: tuple[str, int, int] = None
@@ -31,18 +31,19 @@ class RunnerAgent(pytactx.Agent):
     def __next_action(self) -> str:
         """ Methode à mémoire.
         Renvoi la prochaine action à effectuer dans la liste self.path"""
-        print(f"Next Action, based on {self._path}")
+        print(f"Next Action, based on {self.__path}")
         if not hasattr(self, '_path_iter'):
-            self._path_iter = iter(self._path)
+            self._path_iter = iter(self.__path)
         try:
             _next = next(self._path_iter)
             _next = str(_next if isinstance(_next, int) else _next[0] if isinstance(_next, tuple) else _next)
             if _next and _next not in self.__visited:
                 print("Next Target : ", _next)
                 return _next
+            return self.__next_action
         except StopIteration:
             print("restart actions")
-            self._path_iter = iter(self._path)
+            self._path_iter = iter(self.__path)
             return self.__next_action
 
     # ================================= PROTECTED METHODS ================================= #
@@ -58,9 +59,10 @@ class RunnerAgent(pytactx.Agent):
         self.deplacerVers(self._target)
 
     # ================================= PUBLIC METHODS ================================= #
-    def go(self):
-        self._path = mapping.cities_from_game_dict(agent.jeu)
+    def _set_path(self, path: tuple[str, int, int]):
+        self.__path = path
 
+    def go(self):
         while self.vie > 0:
             self.actualiser()
             self._handle()
@@ -71,6 +73,7 @@ class RunnerAgent(pytactx.Agent):
 
 if __name__ == '__main__':
     import random
-
-    agent = RunnerAgent(f"Dummy-Runner {random.randint(0, 42)}")
+    agent = RunnerAgent(f"Dummy-{random.randint(0, 42)}")
+    _path = mapping.cities_from_game_dict(agent.jeu)
+    agent._set_path(_path)
     agent.go()
