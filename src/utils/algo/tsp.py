@@ -27,6 +27,10 @@ class TSP:
                 self.__distances[i][j] = dist
                 self.__distances[j][i] = dist
 
+    @property
+    def distances(self):
+        return self.__distances
+
     def solve(self):
 
         start_index = self.__cities.index(self.__start)
