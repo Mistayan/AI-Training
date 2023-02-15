@@ -1,3 +1,6 @@
+import logging
+from typing import Generator, List
+
 import pytactx
 from src.utils import mapping
 
@@ -20,52 +23,53 @@ class RunnerAgent(pytactx.Agent):
                          server="mqtt.jusdeliens.com",
                          prompt=False,
                          verbose=False)
+        self._log = logging.getLogger(__class__.__name__)
+
         self._target: str = None
         self.__path: list[tuple[str, int, int]] = []
 
         self.__visited: list[str] = []
-        self.__last: tuple[str, int, int] = None
 
     # ================================= PRIVATE METHODS ================================= #
     @property
     def __next_action(self) -> str:
         """ Methode à mémoire.
         Renvoi la prochaine action à effectuer dans la liste self.path"""
-        print(f"Next Action, based on {self.__path}")
+        self._log.info(f"Next Action, based on {self.__path}")
         if not hasattr(self, '_path_iter'):
             self._path_iter = iter(self.__path)
         try:
-            _next = next(self._path_iter)
-            _next = str(_next if isinstance(_next, int) else _next[0] if isinstance(_next, tuple) else _next)
+            _next = next(self._path_iter)[0]
             if _next and _next not in self.__visited:
-                print("Next Target : ", _next)
+                self._log.info(f"Next Target : {_next}")
                 return _next
             return self.__next_action
         except StopIteration:
-            print("restart actions")
+            self._log.info("restart actions")
             self._path_iter = iter(self.__path)
             return self.__next_action
 
     # ================================= PROTECTED METHODS ================================= #
-    def _handle(self):
+    def _handle(self, *args):
         """ Move to target.
         If arrived at requested location, find next target to go to.
         Save current target in visited, in case path changes [fail-safe]"""
         if not self._target or self.derniereDestinationAtteinte == self._target:
-            print("ARRIVED @ ", self._target)
+            self._log.info(f"ARRIVED @{self._target}")
             self.__visited.append(self._target)
             self._target = self.__next_action
-            print(f"deplacerVers {self._target}")
+            self._log.info(f"deplacerVers {self._target}")
         self.deplacerVers(self._target)
 
-    # ================================= PUBLIC METHODS ================================= #
-    def _set_path(self, path: tuple[str, int, int]):
+    def _set_path(self, path: tuple[str, int, int] | Generator | List[str]):
         self.__path = path
 
+    # ================================= PUBLIC METHODS ================================= #
+
     def go(self):
+        self.executerQuandActualiser(self._handle)
         while self.vie > 0:
             self.actualiser()
-            self._handle()
 
 
 # ================================= TEST FILE ================================= #
@@ -73,6 +77,7 @@ class RunnerAgent(pytactx.Agent):
 
 if __name__ == '__main__':
     import random
+
     agent = RunnerAgent(f"Dummy-{random.randint(0, 42)}")
     _path = mapping.cities_from_game_dict(agent.jeu)
     agent._set_path(_path)
