@@ -7,6 +7,7 @@ class PathFinder:
     Useful to find the shortest path around on obstacle to reach the given destination [mazes, obstacles, ...]
     Works better when obstacles are nearer and not too complex.
     """
+
     def __init__(self, grid):
         self.grid = grid
         self.width = len(grid[0])
@@ -19,7 +20,7 @@ class PathFinder:
                            0 <= x < self.height and 0 <= y < self.width and self.grid[x][y] != "#"]
         return valid_neighbors
 
-    def get_shortest_path(self, start, end):
+    def solve(self, start, end):
         start_x, start_y = start
         end_x, end_y = end
 
