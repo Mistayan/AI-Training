@@ -43,7 +43,7 @@ class TSPMap(ISolver):
         res = iter(itertools.starmap(find_best_path, possibilities))
         # get the minimum distance path
         best_path, best_dist = min(res, key=lambda x: x[1])
-        return tuple(best_path), best_dist
+        return tuple(self.__cities[_][0] for _ in best_path), best_dist
 
 
 def solve_chunk(chunk: Iterable, q: Queue):
