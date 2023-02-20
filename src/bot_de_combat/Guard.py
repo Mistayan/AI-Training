@@ -1,34 +1,42 @@
 from __future__ import annotations
 
 from gymnasium.envs.toy_text.blackjack import cmp
+from src.bot.behavior import Patrol
+from src.bot.behavior.BehaviorV2 import Behavior
+from src.bot.utils import Orientation
 
 from pytactx import Agent
-from src.bot.behavior import Patrol
-from src.bot.behavior.Behavior import Behavior
-from src.bot.enums import Orientation
 
 """
 tous les bots de la map sont contenus dans un dict.
+un bot n'est pas forcément lié à un agent.
+
 un bot est représenté par le dict suivant:
 {name: "Name", 
-    {'x': 6, 'y': 5, 'dir': 1, 'ammo': 100, 'd': 1, 'life': 100,
-     'fire': False, 'led': [0, 0, 255], 'profile': 0,
-     'team': 0, 'dest': '', 'eta': [], 'chat': ''}}
+    {'x': 6, 'y': 5, 'dir': 1, 'ammo': 100, 'life': 100}}
+    
+    # {'x': 6, 'y': 5, 'dir': 1, 'ammo': 100, 'd': 1, 'life': 100,
+    #  'fire': False, 'led': [0, 0, 255], 'profile': 0,
+    #  'team': 0, 'dest': '', 'eta': [], 'chat': ''}}
 
+quand on tue un ennemi, on regagne de la vie, et on peut récupérer ses munitions
+
+implémenter un algo IA qui nous permet de choisir la prochaine cible
 
 """
 
 
 class Bot(Agent):
     def __init__(self, name: str = None, default_behavior=None, initial_target: str = None):
+        super().__init__(id=name)
         self.__go = False
-        super().__init__(id=name, verbose=False)
-        self.path = [(self.x + 3, self.y + 3),
-                     (self.x - 3, self.y - 3),
-                     (self.x + 1, self.y + 1)]
+        self.__agent = self
+        self.path = [(self.__agent.x + 3, self.__agent.y + 3),
+                     (self.__agent.x - 3, self.__agent.y - 3),
+                     (self.__agent.x + 1, self.__agent.y + 1)]
         self.behavior = default_behavior(self) if default_behavior else Patrol(self)  # set initial behavior
         self.target = initial_target
-        self.changerCouleur(42, 42, 42)
+        self.__agent.changerCouleur(42, 42, 42)
         # self.executerQuandVieChange(
         #     partial(self.publier, "\\\\\\\Pas cool\\\\\\\\"))
 
@@ -42,8 +50,8 @@ class Bot(Agent):
     def go(self) -> None:
         """ Lance le traitement automatique jusqu'à victoire du robot"""
         self.__go = True
-        while self.vie > 0:
-            self.actualiser()
+        while self.__agent.vie > 0:
+            self.__agent.actualiser()
 
     @property
     def next_actions(self) -> tuple[int, int]:
@@ -69,9 +77,9 @@ class Bot(Agent):
                 print("ET VIVANT !!")
                 # target_dict = self.voisins[self.target]
                 # self.orienter_vers((target_dict['x'], target_dict['y']))
-                self.tirer()
+                self.__agent.tirer()
                 return
-        self.tirer(False)
+        self.__agent.tirer(False)
 
     def update_behavior(self) -> None:
         """ Met à jour le comportement du robot, en fonction des changements du comportement """
@@ -87,7 +95,7 @@ class Bot(Agent):
         orientation = {(1, 0): Orientation.EAST, (-1, 0): Orientation.WEST,
                        (0, 1): Orientation.NORTH, (0, -1): Orientation.SOUTH}
         dx, dy = x - self.x, y - self.y
-        self.orienter(orientation[(cmp(dx, 0), cmp(dy, 0))].value)
+        self.__agent.orienter(orientation[(cmp(dx, 0), cmp(dy, 0))].value)
 
     def orienter_vers_ennemi_plus_proche(self) -> None:
         """ Oriente le robot vers **l'ennemi** le plus proche """
@@ -98,29 +106,30 @@ class Bot(Agent):
     def ennemi_plus_proche(self) -> str:
         """ Renvoi le nom de **l'ennemi** le plus proche
         [Vérifie que ce n'est pas un allié, en fonction du comportement]"""
-        enemies = [n for n in self.voisins if not self.behavior.is_friendly(self.voisins[n]) and self.voisins[n][
-            "life"] > 0 and self.a_portee_de_tir(n)]
-        closest_enemy = min(enemies, key=lambda x: ((self.voisins[x]['x'] - self.x) ** 2 + (
-                self.voisins[x]['y'] - self.y) ** 2) ** 0.5, default=None)
+        enemies = [n for n in self.__agent.voisins if
+                   not self.behavior.is_friendly(self.__agent.voisins[n]) and self.__agent.voisins[n][
+                       "life"] > 0 and self.a_portee_de_tir(n)]
+        closest_enemy = min(enemies, key=lambda x: ((self.__agent.voisins[x]['x'] - self.x) ** 2 + (
+                self.__agent.voisins[x]['y'] - self.y) ** 2) ** 0.5, default=None)
         return closest_enemy
 
     def get_coords_from_nom(self, nom: str) -> tuple[int, int]:
         """ Retourne les coordonnées du robot choisi """
         print(f"Chercher coords de {nom}")
-        target = self.voisins[nom] if nom in self.voisins else None
+        target = self.__agent.voisins[nom] if nom in self.__agent.voisins else None
         if target:
             return target['x'], target['y']
 
     def __distance(self, coords: tuple[int, int]) -> float:
         """ Retourne la distance entre le robot et la cible"""
         x, y = coords
-        return ((x - self.x) ** 2 + (y - self.y) ** 2) ** 0.5
+        return ((x - self.__agent.x) ** 2 + (y - self.__agent.y) ** 2) ** 0.5
 
     @property
     def bots_a_portee(self) -> list[str]:
         """ Liste de **TOUS** les bots à portée """
         bots = []
-        for nom_ennemi in self.voisins:
+        for nom_ennemi in self.__agent.voisins:
             x, y = self.get_coords_from_nom(nom_ennemi)
             if self.__distance((x, y)) <= 6:
                 bots.append(nom_ennemi)
@@ -135,7 +144,7 @@ class Bot(Agent):
         # angle = cmath.phase(complex(x - self.x, y - self.y))
         distance = self.__distance((x, y)) <= 6
         aligne = self.x == x or self.y == y
-        res = aligne and (self.distance or distance)
+        res = aligne and (self.__agent.distance or distance)
         print(f"a portée de tir de {name} ? => {res}")
         return res
 
@@ -144,7 +153,7 @@ class Bot(Agent):
         print(f"{name} est vivant ?")
         name = name or self.target
         if name:
-            b = self.voisins[name]
+            b = self.__agent.voisins[name]
             print(b['life'])
             return b['life'] > 0
         else:
@@ -174,7 +183,7 @@ class Bot(Agent):
 
     def avancer(self, dist: int = 1) -> None:
         """ Avance de N cases dans l'orientation actuelle du robot """
-        ori = self.orientation
-        y = self.y + (dist * -(ori - 2)) if ori in (Orientation.SOUTH, Orientation.NORTH) else 0
-        x = self.x + (dist * -(ori - 1)) if ori in (Orientation.WEST, Orientation.EAST) else 0
-        self.deplacer(x, y)
+        ori = self.__agent.orientation
+        y = self.__agent.y + (dist * -(ori - 2)) if ori in (Orientation.SOUTH, Orientation.NORTH) else 0
+        x = self.__agent.x + (dist * -(ori - 1)) if ori in (Orientation.WEST, Orientation.EAST) else 0
+        self.__agent.deplacer(x, y)
