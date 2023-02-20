@@ -40,7 +40,7 @@ class HamiltonianSolver(ISolver):
         """
 
         nodes = list(self.__graph.nodes())
-        visited = visited or {nodes[start_index]}
+        visited = set(visited) or {nodes[start_index]}
         path = [nodes[start_index]]
         unvisited = set(nodes) - visited
 
