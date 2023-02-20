@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from gymnasium.envs.toy_text.blackjack import cmp
-from src.bot.behavior import Patrol
-from src.bot.behavior.BehaviorV2 import Behavior
-from src.bot.utils import Orientation
+
 
 from pytactx import Agent
+from src.bot_de_combat.behavior.Behavior import Behavior
+from src.bot_de_combat.behavior.BehaviorV2 import Patrol
+from src.utils.orientation import Orientation
 
 """
 tous les bots de la map sont contenus dans un dict.
