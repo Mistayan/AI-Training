@@ -1,8 +1,8 @@
 import logging
-from typing import Generator, List
+from typing import Generator, List, Tuple
 
 import pytactx
-from src.utils import mapping
+from src.utils.mapping.arrays import cities_from_game_dict
 
 
 class RunnerAgent(pytactx.Agent):
@@ -16,6 +16,7 @@ class RunnerAgent(pytactx.Agent):
         """
         # create state machine
         # finally the super init
+        self._log = logging.getLogger(myId)
         super().__init__(id=myId,
                          username="demo",
                          password="demo",
@@ -23,8 +24,6 @@ class RunnerAgent(pytactx.Agent):
                          server="mqtt.jusdeliens.com",
                          prompt=False,
                          verbose=False)
-        self._log = logging.getLogger(__class__.__name__)
-
         self._target: str = None
         self.__path: list[tuple[str, int, int]] = []
 
@@ -39,15 +38,16 @@ class RunnerAgent(pytactx.Agent):
         if not hasattr(self, '_path_iter'):
             self._path_iter = iter(self.__path)
         try:
-            _next = next(self._path_iter)[0]
+            _next = next(self._path_iter)
             if _next and _next not in self.__visited:
                 self._log.info(f"Next Target : {_next}")
-                return _next
+                return _next[0] if isinstance(next, Tuple) else _next
             return self.__next_action
         except StopIteration:
             self._log.info("restart actions")
             self._path_iter = iter(self.__path)
             return self.__next_action
+
 
     # ================================= PROTECTED METHODS ================================= #
     def _handle(self, *args):
@@ -61,7 +61,7 @@ class RunnerAgent(pytactx.Agent):
             self._log.info(f"deplacerVers {self._target}")
         self.deplacerVers(self._target)
 
-    def _set_path(self, path: tuple[str, int, int] | Generator | List[str]):
+    def _set_path(self, path: List[Tuple[str, int, int]] | Generator | List[str]):
         self.__path = path
 
     # ================================= PUBLIC METHODS ================================= #
@@ -70,6 +70,7 @@ class RunnerAgent(pytactx.Agent):
         self.executerQuandActualiser(self._handle)
         while self.vie > 0:
             self.actualiser()
+        self._log.warning("I won...")
 
 
 # ================================= TEST FILE ================================= #
@@ -79,6 +80,6 @@ if __name__ == '__main__':
     import random
 
     agent = RunnerAgent(f"Dummy-{random.randint(0, 42)}")
-    _path = mapping.cities_from_game_dict(agent.jeu)
+    _path = cities_from_game_dict(agent.jeu)
     agent._set_path(_path)
     agent.go()
