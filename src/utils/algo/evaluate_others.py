@@ -28,5 +28,5 @@ def eval_fear_factor(our_bot: dict, ref_bot: dict):
           life fact : ({life}) = {life_factor:.2f}
           ammo fact : ({ammo}) = {ammo_factor:.2f}
           fear_factor : {fear_factor:.3f}
-          potential accomodation : { fear_factor * max_factor}""")
+          potential accommodation : {fear_factor * max_factor}""")
     return min(fear_factor, 1)
