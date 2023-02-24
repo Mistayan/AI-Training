@@ -12,6 +12,7 @@ class HamiltonianSolver(ISolver):
     """
     The path with the shortest distances between cities
     """
+
     @property
     def distances(self):
         return self.__distances
@@ -27,7 +28,8 @@ class HamiltonianSolver(ISolver):
         return self.__graph.copy(True)
 
     @measure_perf
-    def solve(self, start_index: int = 0, end: int = 0, back_to_start=False, max_iter: int = -1, visited: Set = None) -> Tuple[Tuple[str], float]:
+    def solve(self, start_index: int = 0, end: int = 0, back_to_start=False, max_iter: int = -1, visited: Set = None) -> \
+            Tuple[Tuple[str], float]:
         """
         The path with the shortest distances between cities
 
@@ -40,19 +42,21 @@ class HamiltonianSolver(ISolver):
         """
 
         nodes = list(self.__graph.nodes())
-        visited = set(visited) or {nodes[start_index]}
+        visited = visited or {nodes[start_index]}
         path = [nodes[start_index]]
         unvisited = set(nodes) - visited
 
         while unvisited:
             current = path[-1]
             # get the closest city to travel to
-            nearest = min(unvisited, key=lambda x: self.__graph[current][x]['distance'])
+            G = self.__graph[current]
+            nearest = min(unvisited, key=lambda x: G[x]['distance'])
+            del G
             path.append(str(nearest))
             visited.add(nearest)
             unvisited = unvisited - {nearest}
 
-        dist = graphs.path_distance(self.__graph, path, start_index, end)
+        dist = graphs.path_total_distance(self.__graph, path, start_index)
         if back_to_start:
             dist += self.__graph[path[-1]][path[0]]['distance']
         return tuple(path), dist

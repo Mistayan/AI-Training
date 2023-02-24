@@ -5,30 +5,37 @@ import networkx as nx
 
 from src.utils.algo.ISolver import ISolver
 from src.utils.mapping.graphs import entities_to_graph
+from src.utils.metrics import measure_perf
 
 
 class MyGraph(ISolver):
 
-    def __init__(self, cities: List[Tuple[str, int, int]], actual_position: Tuple[int, int]):
+    def __init__(self, cities: List[Tuple[str, int, int]], actual_position: Tuple[int, int] = None):
         self._log = logging.getLogger(__class__.__name__)
         self.__cities = cities
-        self.__start = actual_position
-        self.__G = entities_to_graph(cities)
+        self.__start = actual_position or cities[0][0]
+        self.__G = entities_to_graph(cities, with_edges=True)
+        print(dict(self.__G.nodes.items()))
+        print(dict(self.__G.edges.items()))
 
     @property
     def distances(self):
-        return self.__G.edges.data("dist")
+        return self.__G.edges.data("distance")
 
+    @measure_perf
     def solve(self) -> Tuple[List[str], float]:
         self._log.info(self.__G.nodes.items())
         self._log.info("################ DEPENDS ON CLOSEST CITY ################")
 
-        paths = nx.shortest_paths.shortest_path_length(self.__G, source=self.__cities[0][0], weight="weight")
+        paths = nx.shortest_paths.all_pairs_dijkstra_path_length(self.__G, weight="distance")
         self._log.info(paths, "\n", "#" * 30)
+        print(paths)
+        final = None
         for path in paths:
+            if path[0] == self.__start:
+                print(path)
+                final = path[1]
+                break
             self._log.info(path)
-            if not path == self.__start:
-                continue
-            self._log.info(path)
-
-        return list(paths), sum(paths.values())
+        print(final)
+        return list(final), sum(final.values())

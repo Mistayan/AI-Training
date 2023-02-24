@@ -3,6 +3,7 @@ from typing import List, Tuple
 
 from src.utils.algo.ISolver import ISolver
 from src.utils.mapping.arrays import distances
+from src.utils.metrics import measure_perf
 
 
 class TSP(ISolver):
@@ -29,6 +30,7 @@ class TSP(ISolver):
     def distances(self):
         return self.__distances.copy()
 
+    @measure_perf
     def solve(self, start_index: int = 0, end: int = 0, back_to_start=False):
         """
         Compute the fastest path from permutations of the cities indexes
