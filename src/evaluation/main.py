@@ -3,10 +3,10 @@ from enum import Enum
 
 import networkx as nx
 
-import fsm
 import pytactx
-import src.utils.algo.evaluate_others as ssa
-from bots import BotSerializer, Bot
+from src.bot_de_combat.behavior_correction import fsm
+from src.evaluation.bots import BotSerializer, Bot
+from src.utils.algo.evaluate_others import eval_fear_factor
 from src.utils.my_maths import euclidean_distance
 
 
@@ -51,7 +51,7 @@ class DecisionState(BaseState):
         self.__voisins = BotSerializer(self._agent.voisins)
         for bot in self.__voisins:
             bot: Bot
-            bot.set_score(ssa.eval_fear_factor(self._agent, bot))
+            bot.set_score(eval_fear_factor(self._agent, bot))
             if not bot.distance:
                 bot.set_distance(euclidean_distance(self._agent, bot))
             pos = (bot.x, bot.y)
@@ -133,7 +133,7 @@ class StateMachineAgent(pytactx.Agent):
         self.LIFE_PENALTY = 0.55
         self.AMMO_PENALTY = 0.13
 
-    def quandActualiser(self):
+    def on_update(self):
         self.__state_machine.handle()
 
 
