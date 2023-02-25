@@ -16,7 +16,7 @@ def euclidean_distance(a, b):
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
 
-def calculate_pair_distance(city1: Tuple[str, int, int], city2: Tuple[str, int, int], distance_type: Type = int):
+def calculate_pair_distance(city1: Tuple[str, int, int], city2: Tuple[str, int, int], distance_type: Type = float):
     """
     calcul la distance entre deux entités et la retourne
     :param city1: from
