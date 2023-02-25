@@ -33,7 +33,7 @@ def graph_heat_map(graph: Graph, map_size, weight: str = 'score', main_attribute
 
     # the higher values means avoid at all costs.
     if not fig:
-        fig: Figure = fig or plt.figure(figsize=(5, 5))
+        fig: Figure = fig or plt.figure(figsize=(10, 10))
         plt.axis([-5, map_size + 5, -5, map_size + 5])
 
     # ACTION / FLEE MAP
@@ -47,9 +47,15 @@ def graph_heat_map(graph: Graph, map_size, weight: str = 'score', main_attribute
                      x=x, y=y, cmap='viridis', n_levels=15,
                      warn_singular=False, common_grid=True,
                      common_norm=True, levels=100, gridsize=map_size)
-    sizes = [1 / (_ + 0.1) * 30 for _ in list(factors.values())]
+
+    # compute weights to define plot's sizes
+    sizes = [(1 / (_ + 0.1) * 20) + 50 for _ in list(factors.values())]
     sc = ax.scatter(x=x, y=y, data=factors, s=sizes,
                     c=list(factors.values()), cmap="viridis")
+
+    # plot ME1 node
+    me1 = nodes["ME1"]
+    ax.scatter(x=me1["pos"][0], y=me1["pos"][1], data=factors, s=300, c='r', zorder=2)
 
     # display Heat-Bar to better understand the plots
     cbar = plt.colorbar(sc)
@@ -61,7 +67,7 @@ def graph_heat_map(graph: Graph, map_size, weight: str = 'score', main_attribute
 def display_graph_map(graph: Graph, path: List[str], graph_size, _fig: Figure = None, with_edges=False,
                       colors_only=False, ax=None) -> Figure:
     if _fig is None:
-        _fig = plt.figure(figsize=(20, 20))
+        _fig = plt.figure(figsize=(10, 10))
         ax = plt.axis([-5, graph_size + 5, -5, 30])
     pos = nx.get_node_attributes(graph, 'pos')
     colors = nx.get_node_attributes(graph, 'fear_factor')
@@ -91,7 +97,7 @@ def display_scatter_comparatif(graph: Graph, type='bot', colors_only=False):
         size.append(node['ammo'])
         color.append(node['fear_factor'])
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(5, 5))
     sc = ax.scatter(x, y, s=size, c=color, cmap='viridis')
     ax.set_xlabel('Distance')
     ax.set_ylabel('Life')
@@ -111,7 +117,7 @@ def display_scatter_comparatif(graph: Graph, type='bot', colors_only=False):
     return fig
 
 
-def display_all_figs_from_graph(graph, grid_size, colors_only=True):
+def display_all_figs_from_graph(graph, grid_size, colors_only=True, predictions: List = None):
     # superpose plot layers for better visualization
     fig = display_graph_map(graph, [], grid_size, colors_only=colors_only)
     fig2 = graph_heat_map(graph, map_size=grid_size, fig=fig, weight='fear_factor', colors_only=colors_only)
