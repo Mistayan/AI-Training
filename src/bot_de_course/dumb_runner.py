@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 from typing import Generator, List, Tuple
 
 import pytactx
@@ -50,7 +49,6 @@ class RunnerAgent(pytactx.Agent):
             self._path_iter = iter(self.__path)
             return self.__next_action
 
-
     # ================================= PROTECTED METHODS ================================= #
     def _handle(self, *args):
         """ Move to target.
@@ -68,6 +66,7 @@ class RunnerAgent(pytactx.Agent):
 
     # ================================= PUBLIC METHODS ================================= #
 
+    @measure_perf
     def go(self):
         self.executerQuandActualiser(self._handle)
         while self.vie > 0:
@@ -80,8 +79,10 @@ class RunnerAgent(pytactx.Agent):
 
 if __name__ == '__main__':
     import random
+    import coloredlogs
 
+    coloredlogs.install(logging.DEBUG, propagate=False)
     agent = RunnerAgent(f"Dummy-{random.randint(0, 42)}")
-    _path = cities_from_game_dict(agent.jeu)
+    _path = [_[0] for _ in cities_from_game_dict(agent.jeu)]
     agent._set_path(_path)
     agent.go()
