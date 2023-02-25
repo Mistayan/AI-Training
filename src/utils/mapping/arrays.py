@@ -2,11 +2,11 @@ import itertools
 from typing import Dict, Iterable, Any
 from typing import List, Tuple
 
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.figure import Figure
 
+from src.utils.metrics import measure_perf
 from src.utils.my_maths import calculate_pair_distance
+from src.utils.plt.from_arrays import display_path_on_map
 
 
 def distances(cities: List[Tuple[str, int, int]]) -> np.ndarray:
@@ -89,7 +89,7 @@ def rec_find_bests(iterable: Iterable, max_iter: int, best_dist: int, best_path:
     return rec_find_bests(iterable, max_iter - 1, best_dist, best_path) + [(p, d)]
 
 
-# @measure_perf
+@measure_perf
 def get_city_pairs_distances(cities: List[Tuple[str, int, int]]):
     """
     return distances between each entity as a dict like:
@@ -104,31 +104,6 @@ def get_city_pairs_distances(cities: List[Tuple[str, int, int]]):
                       for j in range(i + 1, size))
     results: [Tuple[str, str], float | int | Any] = itertools.starmap(calculate_pair_distance, city_pairs)
     return dict(results)
-
-
-def display_path_on_map(_cities: List[Tuple[str, int, int]], fig_size: int, path: List) -> Figure:
-    ns, ys, xs = [], [], []
-    fig = plt.Figure()
-    plt.axis([0, fig_size, 0, fig_size])
-    for cn, cx, cy in _cities:
-        ns.append(cn)
-        xs.append(cx)
-        ys.append(cy)
-        plt.plot(cx, cy, marker='o')
-        plt.annotate(cn,  # this is the text
-                     (cx, cy),  # these are the coordinates to position the label
-                     textcoords="offset points",  # how to position the text
-                     xytext=(0, 10),  # distance from text to points (x,y)
-                     ha='center',
-                     fontsize=8)
-    x2, y2 = [], []
-    print(path)
-    for i, p in enumerate(path):
-        x2.append(xs[i])
-        y2.append(ys[i])
-        plt.plot(x2, y2)
-    plt.show()
-    return fig
 
 
 if __name__ == '__main__':
