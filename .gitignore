@@ -1,0 +1,6 @@
+*__pycache__*
+*.png
+*.jpeg
+*.json
+*.csv
+.idea/*
