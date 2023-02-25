@@ -1,18 +1,18 @@
+import logging
 import os
 from abc import ABC, abstractmethod
 from typing import Tuple, List
 
 from config import base_dir
-from src.utils.metrics import measure_perf
 
 
 class ISolver(ABC):
     # @measure_perf
     @abstractmethod
     def __init__(self, cities: List[Tuple[str, int, int]]):
+        self._log = logging.getLogger(__class__.__name__)
         pass
 
-    @measure_perf
     @abstractmethod
     def solve(self):
         """
@@ -34,3 +34,6 @@ class ISolver(ABC):
         with open(os.path.join('\\'.join([base_dir, "csv", "paths.csv"])), 'a+') as fp:
             print(data[0], file=fp, end=";")
             print(data[1], file=fp, flush=True)
+
+    def __str__(self):
+        return self.__class__.__name__
