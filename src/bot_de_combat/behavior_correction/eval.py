@@ -24,13 +24,13 @@ class Bot:
 
     def __init__(self, name: str, player_dict: dict):
         self.name = name
-        self.vie = player_dict.__getitem__('life')
-        self.x = player_dict.__getitem__('x')
-        self.y = player_dict.__getitem__('y')
+        self.vie = player_dict.get('life')
+        self.x = player_dict.get('x')
+        self.y = player_dict.get('y')
         # self.coords = (self.x, self.y)
-        self.ammo = player_dict.__getitem__('ammo')
-        self.fire = player_dict.__getitem__('fire')
-        self.distance = player_dict.__getitem__('d')  # without obstacles, OK
+        self.ammo = player_dict.get('ammo')
+        self.fire = player_dict.get('fire')
+        self.distance = player_dict.get('d')  # without obstacles, OK
         self.fear_factor = float('1.0')
 
     def __set_score(self, fear_factor: float):
