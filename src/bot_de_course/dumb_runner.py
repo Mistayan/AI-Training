@@ -1,8 +1,10 @@
 import logging
+from datetime import datetime
 from typing import Generator, List, Tuple
 
 import pytactx
 from src.utils.mapping.arrays import cities_from_game_dict
+from src.utils.metrics import measure_perf
 
 
 class RunnerAgent(pytactx.Agent):

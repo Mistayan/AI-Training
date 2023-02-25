@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from random import randint
 from typing import Type, Dict, Tuple
 
-from src.utils import Orientation
+from src.utils.orientation import Orientation
 
 COLORS = {
     "Flee": (117, 117, 117),
