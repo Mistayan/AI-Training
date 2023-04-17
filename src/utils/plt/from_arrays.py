@@ -20,7 +20,6 @@ def display_path_on_map(_cities: List[Tuple[str, int, int]], fig_size: int, path
                      ha='center',
                      fontsize=8)
     x2, y2 = [], []
-    print(path)
     for p in path:
         i = None
         if isinstance(p, int):

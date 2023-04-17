@@ -3,14 +3,14 @@ import sys
 from subprocess import Popen
 from time import sleep
 
-from src.bot.Guard import Bot
-from src.bot.behavior.Behavior import Assist
+from src.bot_de_combat.Guard import Bot
+from src.bot_de_combat.behavior.Behavior import Assist
 
-NB_BOTS = 3
+NB_BOTS = 1
 configs = {
-    0: ["Guard", [(5, 2), (2, 5)]],
-    1: ["Hunter", [(1, 1), (2, 5), (4, 10), (3, 3)]],
-    2: ["Assist", None, "Stephen-1"],
+    0: {"_type": "Guard", "coords": [(5, 2), (2, 5)]},
+    1: {"_type": "Hunter", "coords": [(1, 1), (2, 5), (4, 10), (3, 3)]},
+    2: {"_type": "Assist", "coords": "Stephen-1"},
 }
 
 
@@ -25,8 +25,7 @@ def start_one_agent(num: int = 0, _type: str = "Guard", coords: list | str = Non
     Inquisitor: patrol on random coords in order to find heretics
     Assist: stays near the given Bot-Name
     """
-    agent = Bot(name=f"Stephen-{num or random.randint(1, 999)}")
-    agent.changerCouleur(42, 42, 42)  # Inactive
+    agent = Bot(name=f"Dauphong-{random.randint(1, 999)}")
     if isinstance(coords, str):
         agent.behavior = Assist(agent)
         agent.target = coords
@@ -37,14 +36,16 @@ def start_one_agent(num: int = 0, _type: str = "Guard", coords: list | str = Non
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
-        print(sys.argv)
-        config = load_bot_config(int(sys.argv[1]))
-        start_one_agent()
+        bb = int(sys.argv[1])
+        config = load_bot_config(bb)
+        start_one_agent(num=bb, _type=config["_type"], coords=config["coords"])
         exit()
 
     running = []
     for i in range(NB_BOTS):
-        running.append(Popen(f"C:/tmp/cours/IA/venv/Scripts/python.exe run_pytactx_bot.py {i}".split()))
+        running.append(
+            Popen(
+                f"C:/tmp/cours/IA/venv/Scripts/python.exe run_pytactx_bot_avant_corrections.py {(i) % len(configs)}".split()))
 
     try:
         for process in running:
@@ -61,3 +62,4 @@ if __name__ == '__main__':
                 process.terminate()
             elif not process.returncode:
                 running.append(process)
+            _try -= 1

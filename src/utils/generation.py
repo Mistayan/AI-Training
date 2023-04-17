@@ -4,7 +4,7 @@ from functools import partial
 from typing import List, Tuple, Any, Dict
 
 from src.utils.algo.evaluate_others import eval_fear_factor
-from src.utils.mapping.arrays import get_city_pairs_distances
+from src.utils.mapping.arrays import distances_between_entities
 from src.utils.mapping.graphs import entities_to_graph, extract_graph_features
 from src.utils.metrics import measure_perf
 from src.utils.my_maths import euclidean_distance
@@ -35,7 +35,7 @@ def random_cities(nb_cities: int, map_size: int, initials: str = "city ") -> Lis
 @measure_perf
 def generate_entities_map(me, bots_map: List, factors: Dict, with_edges=False):
     rng = partial(random.randint, 1, 100)
-    pairs = get_city_pairs_distances(bots_map) if with_edges else None
+    pairs = distances_between_entities(bots_map) if with_edges else None
     graph = entities_to_graph(bots_map, pairs, with_edges=with_edges)
     _len = len(graph.nodes)
     logging.log(logging.DEBUG, graph)

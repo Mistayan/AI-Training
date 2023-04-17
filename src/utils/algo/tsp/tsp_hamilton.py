@@ -17,7 +17,7 @@ class HamiltonianSolver(ISolver):
     def distances(self):
         return self.__distances
 
-    def __init__(self, cities: List[Tuple[str, int, int]]):
+    def __init__(self, cities: List[Tuple[str, int, int]], current_location: Tuple[int, int] = None):
         self.__graph = mapping.graphs.entities_to_graph(cities)
         # Add edges with their weights
         ng = nx.all_pairs_dijkstra_path_length(self.__graph, weight="distance")

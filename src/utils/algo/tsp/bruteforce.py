@@ -15,7 +15,7 @@ class TSP(ISolver):
     >>> shortest_path, distance = TSP(cities=list()).solve(start_index=0, end=0, back_to_start=False)
     """
 
-    def __init__(self, cities: List[Tuple[str, int, int]]):
+    def __init__(self, cities: List[Tuple[str, int, int]], current_location: Tuple[int, int] = None):
         """
         Compute all possible distances between entities given for future uses
         :param cities: cities to explore, with coordinates

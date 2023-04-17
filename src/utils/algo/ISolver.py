@@ -9,7 +9,7 @@ from config import base_dir
 class ISolver(ABC):
     # @measure_perf
     @abstractmethod
-    def __init__(self, cities: List[Tuple[str, int, int]]):
+    def __init__(self, cities: List[Tuple[str, int, int]], current_position: Tuple[int, int]):
         self._log = logging.getLogger(__class__.__name__)
         pass
 

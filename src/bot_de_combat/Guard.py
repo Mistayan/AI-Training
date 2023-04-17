@@ -2,33 +2,14 @@ from __future__ import annotations
 
 from gymnasium.envs.toy_text.blackjack import cmp
 
-
 from pytactx import Agent
-from src.bot_de_combat.behavior.Behavior import Behavior
-from src.bot_de_combat.behavior.BehaviorV2 import Patrol
+from src.bot_de_combat.behavior.Behavior import Behavior, Patrol
 from src.utils.orientation import Orientation
-
-"""
-tous les bots de la map sont contenus dans un dict.
-un bot n'est pas forcément lié à un agent.
-
-un bot est représenté par le dict suivant:
-{name: "Name", 
-    {'x': 6, 'y': 5, 'dir': 1, 'ammo': 100, 'life': 100}}
-    
-    # {'x': 6, 'y': 5, 'dir': 1, 'ammo': 100, 'd': 1, 'life': 100,
-    #  'fire': False, 'led': [0, 0, 255], 'profile': 0,
-    #  'team': 0, 'dest': '', 'eta': [], 'chat': ''}}
-
-quand on tue un ennemi, on regagne de la vie, et on peut récupérer ses munitions
-
-implémenter un algo IA qui nous permet de choisir la prochaine cible
-
-"""
 
 
 class Bot(Agent):
     def __init__(self, name: str = None, default_behavior=None, initial_target: str = None):
+        print("Initialisation")
         super().__init__(id=name)
         self.__go = False
         self.__agent = self
@@ -41,7 +22,7 @@ class Bot(Agent):
         # self.executerQuandVieChange(
         #     partial(self.publier, "\\\\\\\Pas cool\\\\\\\\"))
 
-    def quandActualiser(self):
+    def on_update(self):
         print("Actualisation")
         if self.__go:
             self.attaquer_si_ennemi_en_vue()
@@ -49,7 +30,7 @@ class Bot(Agent):
             self.update_behavior()
 
     def go(self) -> None:
-        """ Lance le traitement automatique jusqu'à victoire du robot"""
+        """ Lance le traitement automatique jusqu'à victoire du robot """
         self.__go = True
         while self.__agent.vie > 0:
             self.__agent.actualiser()
@@ -70,20 +51,20 @@ class Bot(Agent):
 
     def attaquer_si_ennemi_en_vue(self):
         """ Methode qui fait tirer notre robot automatiquement
-         sur un ennemi qui se trouverait en face de nous"""
+         sur un ennemi qui se trouverait à portée de tir """
         print("Attaquer si ennemi en vue")
         if self.__go and self.target and self.a_portee_de_tir(self.target):
             print(f"{self.target} à portée")
             if self.est_vivant(self.target):  # and not self.behavior.is_friendly(target_dict):
                 print("ET VIVANT !!")
-                # target_dict = self.voisins[self.target]
-                # self.orienter_vers((target_dict['x'], target_dict['y']))
+                target_dict = self.voisins[self.target]
+                self.orienter_vers((target_dict['x'], target_dict['y']))
                 self.__agent.tirer()
                 return
         self.__agent.tirer(False)
 
     def update_behavior(self) -> None:
-        """ Met à jour le comportement du robot, en fonction des changements du comportement """
+        """ Met à jour le comportement du robot, en fonction des changements de variables """
         if isinstance(self.behavior, Behavior):
             self.behavior = self.behavior.update()
 

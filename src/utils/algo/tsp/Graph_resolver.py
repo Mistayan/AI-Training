@@ -1,41 +1,39 @@
-import logging
 from typing import List, Tuple
 
 import networkx as nx
+from networkx.algorithms.shortest_paths.astar import astar_path_length
 
 from src.utils.algo.ISolver import ISolver
 from src.utils.mapping.graphs import entities_to_graph
-from src.utils.metrics import measure_perf
 
 
 class MyGraph(ISolver):
 
-    def __init__(self, cities: List[Tuple[str, int, int]], actual_position: Tuple[int, int] = None):
-        self._log = logging.getLogger(__class__.__name__)
-        self.__cities = cities
-        self.__start = actual_position or cities[0][0]
-        self.__G = entities_to_graph(cities, with_edges=True)
-        print(dict(self.__G.nodes.items()))
-        print(dict(self.__G.edges.items()))
+    def __init__(self, cities: List[Tuple[str, int, int]], current_location: Tuple[int, int] = None):
+        self.__graph = entities_to_graph(cities, with_edges=True)
+        self.__me = None
+        self.__paths = nx.single_source_dijkstra_path(self.__graph, cities[0][0], weight="distance")
 
     @property
     def distances(self):
-        return self.__G.edges.data("distance")
+        return self.__graph.edges.data("distance")
 
-    @measure_perf
-    def solve(self) -> Tuple[List[str], float]:
-        self._log.info(self.__G.nodes.items())
-        self._log.info("################ DEPENDS ON CLOSEST CITY ################")
+    def solve(self):
 
-        paths = nx.shortest_paths.all_pairs_dijkstra_path_length(self.__G, weight="distance")
-        self._log.info(paths, "\n", "#" * 30)
-        print(paths)
-        final = None
-        for path in paths:
-            if path[0] == self.__start:
-                print(path)
-                final = path[1]
-                break
-            self._log.info(path)
-        print(final)
-        return list(final), sum(final.values())
+        # Use A* algorithm to find the shortest path that visits all cities
+        paths = []
+        previous_node = None
+        for i, (node, data) in enumerate(self.__graph.nodes.items()):
+            if i == 0:
+                previous_node = node
+                continue
+            paths.append(
+                nx.algorithms.astar_path(self.__graph, source=previous_node, target=node, weight="distance")[1])
+        tsp_path = [city for city in paths if city != "me"]
+
+        # Compute the total distance of the TSP path
+        total_distance = 0
+        for i in range(len(tsp_path) - 1):
+            src, dest = tsp_path[i], tsp_path[i + 1]
+            total_distance += astar_path_length(self.__graph, src, dest, weight="distance")
+        return tsp_path, total_distance

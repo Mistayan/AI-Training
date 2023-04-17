@@ -34,7 +34,7 @@ def graph_heat_map(graph: Graph, map_size, weight: str = 'score', main_attribute
     # the higher values means avoid at all costs.
     if not fig:
         fig: Figure = fig or plt.figure(figsize=(10, 10))
-        plt.axis([-5, map_size + 5, -5, map_size + 5])
+        plt.axis([-5, int(map_size) + 5, -5, int(map_size) + 5])
 
     # ACTION / FLEE MAP
     if colors_only is False:  # annotate points with designated weight
@@ -49,7 +49,7 @@ def graph_heat_map(graph: Graph, map_size, weight: str = 'score', main_attribute
                      common_norm=True, levels=100, gridsize=map_size)
 
     # compute weights to define plot's sizes
-    sizes = [(1 / (_ + 0.1) * 20) + 50 for _ in list(factors.values())]
+    sizes = [(1 / (float(_) + 0.1) * 20) + 50 for _ in list(factors.values())]
     sc = ax.scatter(x=x, y=y, data=factors, s=sizes,
                     c=list(factors.values()), cmap="viridis")
 
@@ -121,10 +121,13 @@ def display_all_figs_from_graph(graph, grid_size, colors_only=True, predictions:
     # superpose plot layers for better visualization
     fig = display_graph_map(graph, [], grid_size, colors_only=colors_only)
     fig2 = graph_heat_map(graph, map_size=grid_size, fig=fig, weight='fear_factor', colors_only=colors_only)
-    fig2.savefig(gen_file("#heat-map.png"))
+
+    filename2 = "heat-map.png" if predictions is not None else "heat-map-prediction.png"
+    fig2.savefig(gen_file(filename2))
     plt.show()
 
     # comparatif between different values
+    filename3 = "factors-map.png" if predictions is not None else "factors-map-prediction.png"
     fig3 = display_scatter_comparatif(graph, colors_only=colors_only)
-    fig3.savefig(gen_file("#factors-map.png"))
+    fig3.savefig(gen_file(filename3))
     plt.show()

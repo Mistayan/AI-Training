@@ -6,7 +6,6 @@ import numpy as np
 
 from src.utils.metrics import measure_perf
 from src.utils.my_maths import calculate_pair_distance
-from src.utils.plt.from_arrays import display_path_on_map
 
 
 def distances(cities: List[Tuple[str, int, int]]) -> np.ndarray:
@@ -90,26 +89,17 @@ def rec_find_bests(iterable: Iterable, max_iter: int, best_dist: int, best_path:
 
 
 @measure_perf
-def get_city_pairs_distances(cities: List[Tuple[str, int, int]]):
+def distances_between_entities(entities: List[Tuple[str, int, int]]):
     """
     return distances between each entity as a dict like:
 
     {   (0, 1): 12, (1, 2): 31, ...     }
-    :param cities: cities
+    :param entities: any entity with a name and coordinates in a list of tuples
     :return:
     """
-    size = len(cities)
-    city_pairs = iter((cities[i], cities[j])
+    size = len(entities)
+    city_pairs = iter((entities[i], entities[j])
                       for i in range(size)
                       for j in range(i + 1, size))
     results: [Tuple[str, str], float | int | Any] = itertools.starmap(calculate_pair_distance, city_pairs)
     return dict(results)
-
-
-if __name__ == '__main__':
-    from src.utils.generation import random_cities
-
-    cities = random_cities(20, 30)
-    display_path_on_map(cities, 30, [])
-    # self._log.info(iter_paths)
-    # SVM

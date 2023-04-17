@@ -92,7 +92,12 @@ class Flee(Behavior):
         self._log.info("Fleeing")
         self._bot.changerCouleur(*COLORS["Flee"])
         if self._bot.bots_a_portee:
-            self._bot.orienter((self._bot.orientation + 2 + randint(-1, 1)) % 4)  # Flee in opposite direction
+            # en fonction de notre position actuelle,
+            # si on approche des bords, on change de direction,
+            # tout en évitant les ennemies
+            if self._bot.x <= 3 or self._bot.y <= 3 or self._bot.x >= 97 or self._bot.y >= 97:
+                self._bot.orienter((self._bot.orientation + 2 + self._super_rand()) % 4)
+
             self._bot.avancer(2)
         else:  # Passe en patrouille si aucun ennemi en vue
             self.change_state(Patrol)
@@ -107,16 +112,16 @@ class Dodge(Flee):
         enemy = self._bot.nearest_enemy
         if enemy:
             x, y = enemy["x"], enemy["y"]
-            if x < self._bot.x:
+            if x < self._bot.x:  # Si l'ennemi est en bas
                 self._bot.orienter(Orientation.EAST)
                 self._bot.avancer(self._bot.x - x)
-            elif x > self._bot.x:
+            elif x > self._bot.x:  # Si l'ennemi est en haut
                 self._bot.orienter(Orientation.WEST)
                 self._bot.avancer(x - self._bot.x)
-            elif y < self._bot.y:
+            elif y < self._bot.y:  # Si l'ennemi est à gauche
                 self._bot.orienter(Orientation.SOUTH)
                 self._bot.avancer(self._bot.y - y)
-            elif y > self._bot.y:
+            elif y > self._bot.y:  # Si l'ennemi est à droite
                 self._bot.orienter(Orientation.NORTH)
                 self._bot.avancer(y - self._bot.y)
 
@@ -135,8 +140,6 @@ class Pursuit(Behavior):
             not self._bot.a_portee_de_tir(self._bot.target) and self._bot.avancer()
         if self._bot.vie <= 20:
             self.change_state(Flee)
-        # if 90 >= self._bot.vie > 50:
-        #     self.switzzer_strat()
 
     def switzzer_strat(self):
         """ Effectue la methode SWITZZER pendant la bataille """
@@ -173,3 +176,14 @@ class Assist(Behavior):
         p_dict = self._bot.voisins[self._bot.target]
         x, y = p_dict['x'], p_dict['y']
         self._bot.deplacer(x, y)
+
+
+class ChooseTarget(Behavior):
+    def execute(self):
+        self._log.info("Choosing target")
+        self._bot.changerCouleur(*COLORS["ChooseTarget"])
+        if self._bot.bots_en_vue:
+            self._bot.set_target(self._bot.bots_en_vue[0])
+            self._bot.behavior = Pursuit(bot=self._bot)
+        else:
+            self._bot.behavior = Search(bot=self._bot)

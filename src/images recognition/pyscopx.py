@@ -71,19 +71,19 @@ def _updateConnection(camera):
 
     dtReception = (maintenant - camera._prevReception).total_seconds() * 1000
     if (dtReception > Camera.dtDeconnexion):
-        if (camera.estConnecte == True):
+        if (camera._connected_to_broker == True):
             if (camera.verbose):
                 print("Deconnecté de la caméra")
-            camera.estConnecte = False
-            camera.quandDeconnecte()
+            camera._connected_to_broker = False
+            camera.on_disconnect()
             if (camera._onDisconnected != None):
                 camera._onDisconnected(camera)
     else:
-        if (camera.estConnecte == False):
+        if (camera._connected_to_broker == False):
             if (camera.verbose):
                 print("Connecté à la caméra")
-            camera.estConnecte = True
-            camera.quandConnecte()
+            camera._connected_to_broker = True
+            camera.on_connect()
             if (camera._onConnected != None):
                 camera._onConnected(camera)
 
