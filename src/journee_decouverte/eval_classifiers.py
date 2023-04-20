@@ -10,6 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score, \
     PredictionErrorDisplay
 from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
@@ -38,10 +39,12 @@ def general_overview(y_test, y_pred, clf, name):
     print(f"Recall : {recall}")
     f1 = f1_score(y_test, y_pred, average='weighted')
     print(f"F1 : {f1}")
-    fig2 = seaborn.barplot(x=["Accuracy", "Precision", "Recall", "F1"], y=[accuracy, precision, recall, f1])
+    seaborn.barplot(x=["Accuracy", "Precision", "Recall", "F1"], y=[accuracy, precision, recall, f1])
     plt.title(f"Scores for {clf}")
     plt.savefig(gen_file(str(name) + "_scores", fig_dir, ".png"))
     plt.show()
+    display_prediction_on_training_set(x_train, y_train, clf, fig_dir)
+
     return accuracy * precision * recall * f1
 
 
@@ -72,6 +75,7 @@ def display_prediction_on_training_set(x_train, y_train, clf, fig_dir):
 
 if __name__ == "__main__":
     # make a list of viable classifiers to scan images in order to find the main color
+    # set as partial to avoid memory sharing between classifiers and memory over-use
     classifiers = [
         partial(SVC, **{'kernel': 'linear'}),
         partial(SVC, **{'kernel': 'sigmoid'}),
@@ -79,9 +83,9 @@ if __name__ == "__main__":
         # partial(SVR, **{'kernel': 'linear'}),
         partial(DecisionTreeClassifier, **{}),
         partial(RandomForestClassifier, **{'n_estimators': 20}),
-        # partial(MLPClassifier,
-        #         **{'hidden_layer_sizes': (140, 100, 7), 'max_iter': 500, 'alpha': 0.0001, 'solver': 'sgd',
-        #            'verbose': 10, 'random_state': 21, 'learning_rate_init': 0.01}),
+        partial(MLPClassifier,
+                **{'hidden_layer_sizes': (3, 10, 7), 'max_iter': 500, 'alpha': 0.0001, 'solver': 'sgd',
+                   'verbose': 10, 'random_state': 21, 'learning_rate_init': 0.01}),
         # partial(Lasso, **{'alpha': 1, 'max_iter': 1000})
     ]
     df = pd.read_csv("training.csv")
@@ -96,9 +100,9 @@ if __name__ == "__main__":
 
         # train
         clf.fit(x_train, y_train)
-        display_prediction_on_training_set(x_train, y_train, clf, fig_dir)
 
         y_pred = predict_with(clf, x_test)
+
         # generate multiple graphs to see if model is worth saving
         mega_score = general_overview(y_test, y_pred, clf, classifier)
 
