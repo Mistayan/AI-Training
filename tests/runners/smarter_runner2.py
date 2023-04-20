@@ -7,7 +7,7 @@ if __name__ == '__main__':
     import random
     import coloredlogs
 
-    name = "Mapper"
+    name = "Dummy"
     coloredlogs.install(logging.DEBUG)
     smart = SmartRunner(f"{name}-{random.randint(0, 42)}")
     smart.go(TSPMap)

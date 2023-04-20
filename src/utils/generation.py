@@ -8,7 +8,7 @@ from src.utils.mapping.arrays import distances_between_entities
 from src.utils.mapping.graphs import entities_to_graph, extract_graph_features
 from src.utils.metrics import measure_perf
 from src.utils.my_maths import euclidean_distance
-from src.utils.plt.graphs import display_all_figs_from_graph
+from src.utils.plt.graphs import generate_all_figs_from_graph
 
 grid_size = 30
 nb_bots = 50
@@ -64,7 +64,7 @@ def generate_data_fear_factor(nb_bots, grid_size, factors, display=False):
     bots_map: List[Tuple[str, int, int]] = random_cities(nb_bots, grid_size, "bot")
     me = random_cities(1, grid_size, "ME")[0]
     graph = generate_entities_map(me, bots_map, factors, with_edges=False)
-    display and display_all_figs_from_graph(graph, grid_size, colors_only=True)
+    display and generate_all_figs_from_graph(graph, grid_size, colors_only=True)
 
     features, labels = extract_graph_features(graph, compare_to_me=True)
 

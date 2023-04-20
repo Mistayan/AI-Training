@@ -1,9 +1,13 @@
+import logging
 from subprocess import Popen
 from time import sleep
 
+import coloredlogs
+
 if __name__ == '__main__':
+    coloredlogs.install(logging.DEBUG, propagate=False)
     python_venv = "C:/tmp/cours/IA/venv/Scripts/python.exe"
-    run = ["smarter_runner3.py"]
+    run = ["smarter_runner3.py", "smarter_runner.py", "smarter_runner2.py", "smarter_runner4.py"]
 
     running = []
     for executable in run:

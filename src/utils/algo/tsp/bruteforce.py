@@ -10,7 +10,7 @@ class TSP(ISolver):
     """The Shortest Path
     Compute all possible paths, given their distances and find the fastest
 
-    Distances matrice may be used to train an AI model.
+    Distances matrix may be used to train an AI model.
 
     >>> shortest_path, distance = TSP(cities=list()).solve(start_index=0, end=0, back_to_start=False)
     """
@@ -31,14 +31,14 @@ class TSP(ISolver):
         return self.__distances.copy()
 
     @measure_perf
-    def solve(self, start_index: int = 0, end: int = 0, back_to_start=False):
+    def solve(self, start_index: int = 0, end: int = 0, back_to_start: bool = False) -> Tuple[List[str], float]:
         """
         Compute the fastest path from permutations of the cities indexes
 
-        Skip paths that doesn't start with starting city and process those that does
+        Skip paths that don't start with starting city and process those that do
 
         :param start_index: index of the city to start from
-        :param end: index of the city to end to (leave empty to find the fastest path of all) # NO IMPLEMENTED
+        :param end: index of the city to end to (leave empty to find the fastest path of all) # NOT IMPLEMENTED
         :param back_to_start: do you require to go back from where you came ?
         :return: a Tuple containing 'the fastest path' and its 'distance'
         """
@@ -68,4 +68,7 @@ class TSP(ISolver):
             if dist < best_dist:
                 best_path = path
                 best_dist = dist
-        return [self.__cities[_][0] for _ in best_path], best_dist
+
+        # create the list of city names for the best path
+        city_names = [self.__cities[_][0] for _ in best_path]
+        return city_names, best_dist

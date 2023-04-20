@@ -1,14 +1,11 @@
 import os
 
 
-def gen_file(filename: str, save_dir="plots"):
-    "facet_plot.png"
-
+def gen_file(filename: str, save_dir="plots", fext=".txt"):
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
     if os.path.exists(os.path.join(save_dir, filename)):
-        fname = ''
-        fext = '.txt'
+        fname = filename
         if filename.__contains__('.'):
             fname, fext = filename.split(".")
         for i in range(999):

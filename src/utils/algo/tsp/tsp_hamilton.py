@@ -59,4 +59,4 @@ class HamiltonianSolver(ISolver):
         dist = graphs.path_total_distance(self.__graph, path, start_index)
         if back_to_start:
             dist += self.__graph[path[-1]][path[0]]['distance']
-        return tuple(path), dist
+        return list(path), dist

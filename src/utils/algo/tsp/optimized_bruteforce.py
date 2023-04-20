@@ -72,4 +72,4 @@ class TSPMap(ISolver):
                 best_path = path
                 best_dist = dist
         print(best_path)
-        return [self.__cities[_][0] for _ in best_path], best_dist
+        return [self.__cities[int(_)][0] for _ in best_path], best_dist

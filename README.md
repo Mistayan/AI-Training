@@ -133,3 +133,11 @@ the red area represents a danger zone. Avoid as much as possible
 
 If we are in a red area and a non-red area is possible to flee to, flee
 If we are required to flee, we aim to escape the red area
+
+# Origines du SVM
+
+Le SVM est un algorithme d'apprentissage supervisé qui permet de résoudre des problèmes de classification et de
+régression. Il est utilisé pour la classification binaire et la classification multi-classe. Il est également utilisé
+pour la régression.
+
+Permet de trouver une frontière de décision entre deux classes. Il est possible de trouver une frontière de décision

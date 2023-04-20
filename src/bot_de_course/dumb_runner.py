@@ -3,7 +3,6 @@ from typing import Generator, List, Tuple
 
 import pytactx
 from src.utils.mapping.arrays import cities_from_game_dict
-from src.utils.metrics import measure_perf
 
 
 class RunnerAgent(pytactx.Agent):
@@ -66,12 +65,12 @@ class RunnerAgent(pytactx.Agent):
 
     # ================================= PUBLIC METHODS ================================= #
 
-    @measure_perf
     def go(self):
         self.executerQuandActualiser(self._handle)
         while self.vie > 0:
             self.actualiser()
         self._log.warning("I won...")
+        exit(117)
 
 
 # ================================= TEST FILE ================================= #

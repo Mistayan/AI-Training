@@ -60,7 +60,7 @@ def graph_heat_map(graph: Graph, map_size, weight: str = 'score', main_attribute
     # display Heat-Bar to better understand the plots
     cbar = plt.colorbar(sc)
     cbar.set_label('Fear Factor')
-
+    plt.title(f"Map of {weight} factors", fontsize=20, fontweight='bold')
     return fig
 
 
@@ -90,7 +90,7 @@ def display_scatter_comparatif(graph: Graph, type='bot', colors_only=False):
     x, y, size, color = [], [], [], []
 
     for node in nodes:
-        if not node.get('type') == type:
+        if node.get('type') != type:
             continue
         x.append(node['distance'])
         y.append(node['life'])
@@ -101,7 +101,7 @@ def display_scatter_comparatif(graph: Graph, type='bot', colors_only=False):
     sc = ax.scatter(x, y, s=size, c=color, cmap='viridis')
     ax.set_xlabel('Distance')
     ax.set_ylabel('Life')
-    ax.set_title('Scatter plot of nodes in the graph')
+    ax.set_title('Who is the next target ?')
     n = len(x)
     for i, node in enumerate(graph.nodes):
         if i == n:
@@ -117,14 +117,14 @@ def display_scatter_comparatif(graph: Graph, type='bot', colors_only=False):
     return fig
 
 
-def display_all_figs_from_graph(graph, grid_size, colors_only=True, predictions: List = None):
-    # superpose plot layers for better visualization
+def generate_all_figs_from_graph(graph, grid_size, colors_only=True, predictions: List = None):
+    # superpose plots layers for better visualization
     fig = display_graph_map(graph, [], grid_size, colors_only=colors_only)
-    fig2 = graph_heat_map(graph, map_size=grid_size, fig=fig, weight='fear_factor', colors_only=colors_only)
 
+    # draw heat map to better visualize the networkx grid
+    fig2 = graph_heat_map(graph, map_size=grid_size, fig=fig, weight='fear_factor', colors_only=colors_only)
     filename2 = "heat-map.png" if predictions is not None else "heat-map-prediction.png"
     fig2.savefig(gen_file(filename2))
-    plt.show()
 
     # comparatif between different values
     filename3 = "factors-map.png" if predictions is not None else "factors-map-prediction.png"

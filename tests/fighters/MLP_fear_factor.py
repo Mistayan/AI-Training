@@ -11,7 +11,7 @@ from config import FACTORS
 from src.utils.generation import generate_data_fear_factor, random_cities, generate_entities_map
 from src.utils.mapping.graphs import extract_graph_features
 from src.utils.os_utils import gen_file
-from src.utils.plt.graphs import display_all_figs_from_graph
+from src.utils.plt.graphs import generate_all_figs_from_graph
 
 # Define the dataset of labeled examples
 # The three input features are "distance", "ammo", and "life"
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     df = DataFrame(features, index=labels, columns=['dist', 'ammo', 'life'])
     print(f"on DataFrame : \n{df}")
     # show the graph
-    display_all_figs_from_graph(graph, grid_size, colors_only=True, predictions=pred)
+    generate_all_figs_from_graph(graph, grid_size, colors_only=True, predictions=pred)
 
     df.to_csv(gen_file("MLP-fear_factors.csv", "csv"))
 
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     except IndexError:
         ...
     # show the new graph
-    display_all_figs_from_graph(graph, grid_size, colors_only=True)
+    generate_all_figs_from_graph(graph, grid_size, colors_only=True)
     # Save the model
     with open(gen_file("svm-fear_factors.pkl", "pkl"), "wb") as file:
         pickle.dump(model, file)
