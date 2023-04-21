@@ -65,7 +65,7 @@ def pixel_color(robot):
 class RobotTest(OvaClientMqtt, ChromatX):
     def __init__(self, train=False):
         self.__arena = "ishihara"
-        super().__init__(id="ova1097bdcca0a9",
+        super().__init__(id=input("ova_id ?"),
                          username="plop",
                          password="yolo",
                          imgOutputPath="imgs/captured/to_crop.jpeg",
@@ -73,7 +73,8 @@ class RobotTest(OvaClientMqtt, ChromatX):
                          server="192.168.10.103")
         # self.color_dict = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (127, 0, 127)]
         self.__previous_color = (255, 255, 255)
-        self.__brain = SVC(kernel='linear')
+        self.__brain = None
+        self.__load()
         self.__go = False
         self.__data = self.__x = self.__y = None, None, None
         self.update()
@@ -129,8 +130,9 @@ class RobotTest(OvaClientMqtt, ChromatX):
             and match the color of the object in front of it
             as fast as possible, and as close as possible from the color
         """
-        print("Loading csv for recognitions")
-        self.__load_csv()
+        if self.__brain is None:
+            print("Loading csv for recognitions")
+            self.__load_csv()
         print("📸 Test camera")
         self.update()
         self.__go = True
@@ -164,6 +166,8 @@ class RobotTest(OvaClientMqtt, ChromatX):
             time.sleep(0.1)
 
     def __load_csv(self):
+        if not self.__brain:
+            self.__brain = SVC(kernel='linear', C=1, gamma='auto')
         with open(csv_file, 'r') as fp:
             self.__data = pd.read_csv(fp)
             # Split the data into input features (columns 1 to n) and target variable (column 0)
@@ -185,23 +189,29 @@ class RobotTest(OvaClientMqtt, ChromatX):
         # plot_confusion_matrix("estimator", y_pred, y_test)
 
     def __load(self):
-        try:
-            self.__load_pickle()
-        except Exception as e:
-            print(e)
-            self.__load_csv()
+        # try:
+        self.__load_pickle()
+        # except Exception as e:
+        #     print(e)
+        #     self.__load_csv()
 
     def __load_pickle(self, pickle_file=None):
+        print("Loading pickle file")
         if pickle_file is None:
             # list all pickle files
-            pickle_files = [f for f in os.listdir('pickles') if os.path.isfile(f) and f.endswith('.pkl')]
+            print("Searching for pickles... ")
+            pickle_files = []
+            for f in os.listdir('./pickles'):
+                if f.endswith(".pkl"):
+                    pickle_files.append(f)
+
             if len(pickle_files) == 0:
                 raise FileNotFoundError("No pickle file found")
             # ask user to choose one
             for i, f in enumerate(pickle_files):
                 print(f"{i + 1} - {f}")
             pickle_file = pickle_files[int(input("Choose a pickle file to load")) - 1]
-        with open(pickle_file, 'rb') as fp:
+        with open("./pickles/" + pickle_file, 'rb') as fp:
             self.__brain = pickle.load(fp)
             fp.close()
 
