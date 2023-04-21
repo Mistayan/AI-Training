@@ -5,22 +5,22 @@ import math
 import pandas as pd
 from pandas import array
 from sklearn.metrics import classification_report
-from sklearn.metrics import confusion_matrix, plot_confusion_matrix
+from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 
-import pyscopx
+from originals.ova import OvaClientMqtt
 
 # Créer la variable camera pour récupérer les images
 # 'PrenomNOM' A REMPLACER PAR VOTRE IDENTIFIANT (ex: JulienARNE)
 # CamXXXX A REMPLACER PAR L'ID DERRIERE LA CARTE DE LA CAMERA (ex: CamZF56)
 # USERNAME et PASSWORD A REMPLACER
 # 'OvaYF23', 'CamRD63', 'CamCJ11', 'OvaSU75', 'CamRG67'
-camera = pyscopx.Camera(cameraId='CamRD63',
-                        filtreId='stephenPROUST',
-                        server="mqtt.jusdeliens.com")
+camera = OvaClientMqtt(id="ovaXXXXXXXXXXXX", arena="ishihara", username="", password="", server="192.168.10.103",
+                       port=1883)
 L = camera.lirePixelSaturation
 force_training = False
+csv_file = f"csv/imgs.csv"
 
 
 def grad(L, x, y):
@@ -62,27 +62,30 @@ def characterize(L):
 # 1. ENTRAINEMENT
 data = x = y = init = None
 try:
-    with open('data/imgs.csv', 'r') as fp:
+    with open(csv_file, 'r') as fp:
         data = pd.read_csv(fp)
         x = data.iloc[:, :-1].values
         y = data.iloc[:, -1].values
         print(x, y)
+        fp.close()
 except:
     # Pas de fichier de sauvegarde initialize
 
-    with open('data/imgs.csv', 'r+') as fp:
+    with open(csv_file, 'r+') as fp:
         if fp.read(1) != "g":
             init = True
+            fp.close()
     if init:
-        with open('data/imgs.csv', 'w'):
+        with open(csv_file, 'w+') as fp:
             print("grad_mean,var_mean,category", file=fp)
+            fp.close()
 print(data)
 print()
 if force_training or (data is not None and data.empty):
     print("TRAINING !!")
     category = input("Camera's Images category ?\n0: No_Obstacle\n1: Obstacle")
     camera.actualiser()
-    with open('data/imgs.csv', 'a+') as fp:
+    with open(csv_file, 'a+') as fp:
         while True:
             camera.actualiser()
             if camera.estConnecte == True:
@@ -96,11 +99,7 @@ print(x, y)
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
 
-# Entrainement du classifier à partir des données d'entrainement
-# knn = KNeighborsClassifier(
-#     n_neighbors=5
-# )  # choisir ici le type de classifier avec ses hyperparamètres
-# knn.fit(x_train, y_train)
+# Création du modèle
 classifier = SVC(kernel='linear')
 classifier.fit(x_train, y_train)
 
@@ -110,10 +109,10 @@ print(f"Predictions on dataset : {y_pred}")
 # Génération de la matrice de confusion pour vérifier la bonne précision de notre modèle
 print(f"Confusion Matrice :\n{confusion_matrix(y_test, y_pred)}")
 print(classification_report(y_test, y_pred))
-plot_confusion_matrix("estimator", y_pred, y_test)
+# plot_confusion_matrix("estimator", y_pred, y_test)
 
 # On génère une couleur par obstacle
-my_obstacles = {
+possible_colors = {
     "human": (255, 255, 255),
     "bottle": (0, 255, 255),
 }

@@ -9,6 +9,7 @@ digits = load_digits()
 X, y = digits.data, digits.target
 
 print("Visualiser images & target")
+plt.Figure()
 _, axes = plt.subplots(nrows=1, ncols=4, figsize=(8, 8))
 for ax, img, label in zip(axes, digits.images, digits.target):
     ax.set_axis_off()

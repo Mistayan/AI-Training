@@ -21,11 +21,12 @@ Attention à bien rester en vie !!
 
 __version__ = '0.9.17'
 
-import paho.mqtt.client as mqtt
 import json
-from datetime import datetime
-import time
 import random
+import time
+from datetime import datetime
+
+import paho.mqtt.client as mqtt
 
 
 def _onConnect(client, agent, flags, rc):
@@ -252,6 +253,7 @@ def _updateConnection(agent):
 
 class Agent:
     """Classe permettant d'incarner un agent dans un jeu jusdeliens et de le faire évoluer"""
+    print("Agent init")
     actualiserAvecSleep = True
     dtEnvoiRequete = 300
     topicAgentRead = "pytactx/agents/state"
