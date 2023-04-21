@@ -53,14 +53,14 @@ Il a créé un environnement dédié à l'apprentissage de l'algorithmie et des 
 
 # Ressources
 
-https://jusdeliens.com
-https://scikit-learn.org/stable/modules/ensemble.html
-https://www.geeksforgeeks.org/python-pil-image-crop-method/
-https://jusdeliens.com/epsirennes3cda2223/Jusdeliens-EPSI-IA-J1.pdf
-https://scikit-learn.org/stable/common_pitfalls.html#data-leakage
-https://www.geeksforgeeks.org/matplotlib-pyplot-hist-in-python/
-https://scikit-learn.org/stable/auto_examples/release_highlights/plot_release_highlights_1_2_0.html#sphx-glr-auto-examples-release-highlights-plot-release-highlights-1-2-0-py
-https://www.geeksforgeeks.org/pandas-dataframe-hist-function-in-python/
+* https://jusdeliens.com
+* https://scikit-learn.org/stable/modules/ensemble.html
+* https://www.geeksforgeeks.org/python-pil-image-crop-method/
+* https://jusdeliens.com/epsirennes3cda2223/Jusdeliens-EPSI-IA-J1.pdf
+* https://scikit-learn.org/stable/common_pitfalls.html#data-leakage
+* https://www.geeksforgeeks.org/matplotlib-pyplot-hist-in-python/
+* https://scikit-learn.org/stable/auto_examples/release_highlights/plot_release_highlights_1_2_0.html#sphx-glr-auto-examples-release-highlights-plot-release-highlights-1-2-0-py
+* https://www.geeksforgeeks.org/pandas-dataframe-hist-function-in-python/
 
 ## Materiel
 
