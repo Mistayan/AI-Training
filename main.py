@@ -78,7 +78,7 @@ class RobotTest(OvaClientMqtt, ChromatX):
         self.__data = self.__x = self.__y = None, None, None
         self.update()
         self.__mean_color = None
-        self.__image = None
+        self.__vue = None
         # self.__pool = ThreadPool(processes=2)
         # self.sensors()
 
@@ -86,7 +86,7 @@ class RobotTest(OvaClientMqtt, ChromatX):
         ...
 
     def _onImageReceived(self, img: Image):
-        self.__image = img
+        self.__vue = img
         self.__mean_color = circle_color(self.last_image)
 
     def train(self):
@@ -120,7 +120,7 @@ class RobotTest(OvaClientMqtt, ChromatX):
 
     @property
     def last_image(self) -> Image:
-        return self.__image
+        return self.__vue
 
     def color_matcher(self):
         """
@@ -194,7 +194,7 @@ class RobotTest(OvaClientMqtt, ChromatX):
     def __load_pickle(self, pickle_file=None):
         if pickle_file is None:
             # list all pickle files
-            pickle_files = [f for f in os.listdir('./pickles') if os.path.isfile(f) and f.endswith('.pkl')]
+            pickle_files = [f for f in os.listdir('pickles') if os.path.isfile(f) and f.endswith('.pkl')]
             if len(pickle_files) == 0:
                 raise FileNotFoundError("No pickle file found")
             # ask user to choose one

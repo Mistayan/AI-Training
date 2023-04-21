@@ -7,6 +7,8 @@ from main import init_csv, csv_file, circle_color
 
 if __name__ == '__main__':
     init_csv()
+    # in imgs/captured, there are folders named 0, 1, 2, 3, 4, 5, 6
+    # each folder contains images of the corresponding color category
     for _dir in os.listdir('imgs/captured'):
         if not re.match(r'^\d$', _dir):
             continue

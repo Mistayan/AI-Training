@@ -1,4 +1,5 @@
 import pickle
+import re
 from functools import partial
 from time import sleep
 
@@ -16,19 +17,21 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
-from src.utils.metrics import measure_perf, show_perfs
-from src.utils.os_utils import gen_file
+from rendu_julien_arne_data_visu.utils.metrics import measure_perf, show_perfs
+from rendu_julien_arne_data_visu.utils.os_utils import gen_file
 
 fig_dir = "plots"
 pickle_dir = "pickles"
 
 
-def svm_general_overview(y_test, y_pred, clf, name, display=True):
+def svm_general_overview(y_test, y_pred, clf, name=None, display=True):
+    if not name:
+        name = "_".join(re.findall("\w", clf.__class__.__name__))
     cm = confusion_matrix(y_test, y_pred)
     print(f"Confusion matrix : {cm}")
     fig1 = seaborn.heatmap(cm, annot=True)
     fig1.set_title(f"Confusion matrix for {clf}")
-    plt.savefig(gen_file(str(name) + "_confusion", fig_dir, ".png"))
+    plt.savefig(gen_file(str(name).strip() + "_confusion", fig_dir, ".png"))
     plt.show()
 
     accuracy = accuracy_score(y_test, y_pred)
@@ -48,7 +51,9 @@ def svm_general_overview(y_test, y_pred, clf, name, display=True):
     return accuracy * precision * recall * f1
 
 
-def pickle_it(clf, dir, name):
+def pickle_it(clf, dir, name=None):
+    if not name:
+        name = "_".join(re.findall("\w+", clf.__class__.__name__))
     with open(gen_file(str(name) + ".pkl", str(dir)), "wb") as file:
         pickle.dump(clf, file)
 
@@ -69,7 +74,7 @@ def display_prediction_on_training_set(x_train, y_train, clf, fig_dir):
     _ = PredictionErrorDisplay.from_estimator(
         clf, x_train, y_train, kind="residual_vs_predicted", ax=axs[1]
     )
-    fig.savefig(gen_file(str(clf.__class__.__name__).lstrip() + "_prediction", fig_dir, ".png"))
+    fig.savefig(gen_file(re.sub(r"[\n \"'<>]", "", clf.__class__.__name__) + "_prediction", fig_dir, ".png"))
     plt.show()
 
 
@@ -89,35 +94,47 @@ if __name__ == "__main__":
         # partial(Lasso, **{'alpha': 1, 'max_iter': 1000})
     ]
     df = pd.read_csv("training.csv")
+    df_fig = df.hist(bins=5, figsize=(12, 8), color='#86bf91', zorder=2, rwidth=0.9, grid=False, layout=(3, 3),
+                     sharex=False, sharey=False, xlabelsize=8, ylabelsize=8, edgecolor='black', linewidth=1.2)
+    df_fig = df_fig.flatten()
+    for ax in df_fig:
+        ax.set_xlabel("Value")
+        ax.set_ylabel("Frequency")
+    plt.legend()
+    plt.title("Histogram of each numeric input variable")
+    plt.show()
     x_train = df.drop("category", axis=1)
     y_train = df["category"]
     x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2)
-    for classifier in classifiers:
-        # create a classifier
-        classifier = classifier()
-        clf = make_pipeline(StandardScaler(), classifier, verbose=True)
-        print(f"Testing {classifier}...")
+    for i in range(2):
+        for classifier in classifiers:
+            # create a classifier
+            if i:
+                clf = make_pipeline(StandardScaler(), classifier(), verbose=True)
+            else:
+                clf = classifier()
+            print(f"Testing {classifier}...")
 
-        # train
-        clf.fit(x_train, y_train)
+            # train
+            clf.fit(x_train, y_train)
 
-        y_pred = predict_with(clf, x_test)
+            y_pred = predict_with(clf, x_test)
 
-        # generate multiple graphs to see if model is worth saving
-        mega_score = svm_general_overview(y_test, y_pred, clf, classifier)
+            # generate multiple graphs to see if model is worth saving
+            mega_score = svm_general_overview(y_test, y_pred, clf)
 
-        # save model if score is good enough, or if user wants to
-        if mega_score != 1:
-            save = input("Save this classifier ? (y/n)")
-        else:
-            save = "y"
-        if save == "y":
-            pickle_it(clf, dir=pickle_dir, name=classifier)
+            # save model if score is good enough, or if user wants to
+            if mega_score != 1:
+                save = input("Save this classifier ? (y/n)")
+            else:
+                save = "y"
+            if save == "y":
+                pickle_it(clf, dir=pickle_dir)
 
-        # force delete references to classifier
-        del clf
-        del classifier
-        # let garbage collector do its job (avoid memory sharing between classifiers)
-        sleep(1)
+            # force delete references to classifier
+            del clf
+            del classifier
+            # let garbage collector do its job (avoid memory sharing between classifiers)
+            sleep(1)
 
     show_perfs()
