@@ -4,10 +4,9 @@ from typing import List, Tuple
 
 import numpy as np
 import pandas as pd
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
+import src.utils.metrics
 from config import base_dir
 from src.utils import generation
 from src.utils.algo.tsp.bruteforce import TSP
@@ -57,16 +56,24 @@ def train(clf=None):
     df = read_my_shitty_csv(file)
     # IMPLEMENT CLASSIFIER TRAINING HERE
     if clf is None:
-        clf = Pipeline([
-            ('scaler', StandardScaler()),
-            ('svm', SVC(kernel='linear', C=0.03, max_iter=40))
-        ])
+        # clf = Pipeline([
+        #     ('scaler', StandardScaler()),
+        #     ('svm', SVC(kernel='linear', C=0.03, max_iter=40))
+        # ])
+        clf = SVC(kernel='linear', C=0.03, max_iter=40)
         print(df)
     paths = df.get("path").values
     coords = df.get("coords").values
 
     for i, x in enumerate(coords):
-        clf.fit(x, paths[i])
+        print(f"Training on sample {i + 1} / {len(coords)}")
+        print(x)
+        print(paths[i])
+        try:
+            clf.fit(x, paths[i])
+        except:
+            print("Error")
+            continue
     return clf
 
 
@@ -93,7 +100,7 @@ if __name__ == '__main__':
     num_cities = 300
     # num_obstacles = 2
 
-    # clf = train()
+    clf = train()
     target = np.zeros((num_cities, num_cities))
     cc = generation.random_cities(num_cities, grid_size)
     tsp = HamiltonianSolver(cc)
@@ -107,3 +114,5 @@ if __name__ == '__main__':
     # prediction = clf.predict(coords)
     # print(prediction, "VS", path)
     # print(f"Accuracy: {np.mean(prediction == path)}")
+    # print(calc_pred(prediction))
+    src.utils.metrics.show_perfs()

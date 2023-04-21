@@ -23,20 +23,19 @@ def show_perfs():
         ### make a graphic with 3 subplots, each will be aligned y axis
         fig, (sp1, sp2, sp3) = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=(12, 5))
         fig.suptitle(f"Performance of {k}", fontsize=16)
-        sp1.plot([i for i in range(len(v))], [i[0] for i in v], label="current", color="red", marker="o", markersize=12,
-                 markerfacecolor="yellow", markeredgecolor="blue", markeredgewidth=2)
-        sp1.set_ylabel("current Memory (MB)")
-        sp2.plot([i for i in range(len(v))], [i[1] for i in v], label="peak", color="blue", marker="o")
-        sp2.set_ylabel("peak Memory (MB)")
-        sp3.plot([i for i in range(len(v))], [i[2] for i in v], label="time", color="green", marker="o")
+        sp1.plot([i for i in range(len(v))], [i[0] for i in v], label="memory (MB)", color="red", marker="o")
+        sp1.set_ylabel("Memory Usage (MB)")
+        sp3.plot([i for i in range(len(v))], [i[1] for i in v], label="time (ns)", color="green", marker="o")
         sp3.set_ylabel("time (ns)")
         plt.legend()
         plt.tight_layout()
         plt.show()
 
 
-def measure_perf(func, print_inout=False, print_doc=False):
+def measure_perf(func):
     """Measure performance of a function/method/class
+    pass print_inout=True to print input and output of the function/method/class
+    pass print_doc=True to print the docstring of the function/method/class
     :rtype: function
     """
 
@@ -47,6 +46,8 @@ def measure_perf(func, print_inout=False, print_doc=False):
         """ wrapper is like the function it-self. Requires to run the function/method/class in here"""
         global __my__figures__
         name = func.__name__
+        print_doc = kwargs.pop("print_doc", False)
+        print_inout = kwargs.pop("print_inout", False)
         if name not in __my__figures__:
             __my__figures__[name] = []
             print(f"Creating figure for {args[0].__class__.__name__}")
@@ -65,9 +66,10 @@ def measure_perf(func, print_inout=False, print_doc=False):
         peak = peak / 10 ** 6
         logger.debug(f'Memory usage:\t\t {current:.6f} MB')
         logger.debug(f'Peak memory usage:\t {peak:.6f} MB ')
+        logger.debug(f'Total memory usage:\t {peak:.6f} MB ')
         logger.warning(f'{func.__name__} : Time elapsed (s): {total_time:.6f}')
         logger.debug("#" * 45)
-        __my__figures__[name].append((current, peak, total_time))
+        __my__figures__[name].append((peak - current, total_time))
         return res
 
     return wrapper

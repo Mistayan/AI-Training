@@ -23,7 +23,7 @@ fig_dir = "plots"
 pickle_dir = "pickles"
 
 
-def general_overview(y_test, y_pred, clf, name):
+def svm_general_overview(y_test, y_pred, clf, name, display=True):
     cm = confusion_matrix(y_test, y_pred)
     print(f"Confusion matrix : {cm}")
     fig1 = seaborn.heatmap(cm, annot=True)
@@ -104,7 +104,7 @@ if __name__ == "__main__":
         y_pred = predict_with(clf, x_test)
 
         # generate multiple graphs to see if model is worth saving
-        mega_score = general_overview(y_test, y_pred, clf, classifier)
+        mega_score = svm_general_overview(y_test, y_pred, clf, classifier)
 
         # save model if score is good enough, or if user wants to
         if mega_score != 1:
