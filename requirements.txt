@@ -1,11 +1,11 @@
-pandas==1.5.3
-scikit-learn==1.2.1
-numpy==1.24.2
-matplotlib==3.7.0  # 3.6.3
-paho-mqtt~=1.6.1
-Pillow==10.0.1
+pandas>=1.5.3
+scikit-learn>=1.2.1
+numpy>=1.24.2
+matplotlib>=3.7.0  # 3.6.3
+paho-mqtt>=1.6.1
+Pillow>=10.0.1
 opencv-python
-gymnasium==0.27.1
-networkx~=3.0
-seaborn~=0.12.2
-coloredlogs~=15.0.1
+gymnasium>=0.27.1
+networkx>=3.0
+seaborn>=0.12.2
+coloredlogs>=15.0.1
