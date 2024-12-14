@@ -1,12 +1,13 @@
 import logging
 from typing import Generator, List, Tuple
 
-import pytactx
+from pytactx import agent, env
+from pytactx.pyrobotx.robot import RobotEvent
 from src.utils.mapping.arrays import cities_from_game_dict
 from src.utils.metrics import measure_perf
 
 
-class RunnerAgent(pytactx.Agent):
+class RunnerAgent(agent.AgentFr):
     """
     The agent holding possible states and context parameters
     """
@@ -18,13 +19,15 @@ class RunnerAgent(pytactx.Agent):
         # create state machine
         # finally the super init
         self._log = logging.getLogger(myId)
-        super().__init__(id=myId,
-                         username="demo",
-                         password="demo",
-                         arena="pytactx",
-                         server="mqtt.jusdeliens.com",
-                         prompt=False,
-                         verbose=False)
+        self._log.debug("INIT Agent")
+        super().__init__(myId,
+                         env.ARENA,
+                         env.USERNAME,
+                         env.PASSWORD,
+                         env.BROKERADDRESS,
+                         env.BROKERPORT,
+                         env.VERBOSITY)
+        self._log.debug("Agent connected")
         self._target: str = None
         self.__path: list[tuple[str, int, int]] = []
 
@@ -54,12 +57,12 @@ class RunnerAgent(pytactx.Agent):
         """ Move to target.
         If arrived at requested location, find next target to go to.
         Save current target in visited, in case path changes [fail-safe]"""
-        if not self._target or self.derniereDestinationAtteinte == self._target:
+        if not self._target or self.dernierCheck == self._target:
             self._log.info(f"ARRIVED @{self._target}")
             self.__visited.append(self._target)
             self._target = self.__next_action
             self._log.info(f"deplacerVers {self._target}")
-        self.deplacerVers(self._target)
+        self.deplacerVers(self._target[0])
 
     def _set_path(self, path: List[Tuple[str, int, int]] | Generator | List[str]):
         self.__path = path
@@ -68,7 +71,7 @@ class RunnerAgent(pytactx.Agent):
 
     @measure_perf
     def go(self):
-        self.executerQuandActualiser(self._handle)
+        self.robot.addEventListener(RobotEvent.updated, self._handle)
         while self.vie > 0:
             self.actualiser()
         self._log.warning("I won...")

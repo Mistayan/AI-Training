@@ -29,9 +29,8 @@ class ISolver(ABC):
     def distances(self):
         pass
 
-    @staticmethod
-    def save(data: Tuple[List[Tuple[int, int]], List[int]]):
-        with open(os.path.join('\\'.join([base_dir, "csv", "paths.csv"])), 'a+') as fp:
+    def save(self, data: Tuple[List[Tuple[int, int]], List[int]]):
+        with open(os.path.join('\\'.join([base_dir, "csv", f"{self.__class__.__name__}-paths.csv"])), 'a+') as fp:
             print(data[0], file=fp, end=";")
             print(data[1], file=fp, flush=True)
 
