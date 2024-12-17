@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 
 
-def display_path_on_map(_cities: List[Tuple[str, int, int]], fig_size: int, path: Set, name=None) -> Figure:
+def display_path_on_map(_cities: List[Tuple[str, int, int]], fig_size: int, path: Set|Tuple, name=None) -> Figure:
     ns, ys, xs = [], [], []
     fig = plt.Figure()
     plt.axis([0, fig_size, 0, fig_size])
@@ -20,9 +20,7 @@ def display_path_on_map(_cities: List[Tuple[str, int, int]], fig_size: int, path
                      ha='center',
                      fontsize=8)
     x2, y2 = [], []
-    print(path)
     for p in path:
-        i = None
         if isinstance(p, int):
             i = p
         else:
