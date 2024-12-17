@@ -3,7 +3,7 @@ import random
 from functools import partial
 from typing import List, Tuple, Any, Dict
 
-from src.utils.algo.evaluate_others import eval_fear_factor
+from src.utils.pytactx.evaluate_others import eval_fear_factor
 from src.utils.mapping.arrays import get_city_pairs_distances
 from src.utils.mapping.graphs import entities_to_graph, extract_graph_features
 from src.utils.metrics import measure_perf

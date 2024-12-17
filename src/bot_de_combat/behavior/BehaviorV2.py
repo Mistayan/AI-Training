@@ -5,7 +5,7 @@ from random import randint
 from src.bot_de_combat.behavior.Behavior import COLORS, Behavior
 from src.utils.algo.Dijkstra import PathFinder
 
-from src.utils.orientation import Orientation
+from src.utils.pytactx.orientation import Orientation
 
 
 class Patrol(Behavior):

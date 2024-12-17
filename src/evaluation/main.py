@@ -7,7 +7,7 @@ from pytactx import env
 from pytactx.agent import Agent
 from src.evaluation.bots import BotSerializer, Bot
 from src.evaluation.fsm import State, StateMachine
-from src.utils.algo.evaluate_others import eval_fear_factor
+from src.utils.pytactx.evaluate_others import eval_fear_factor
 from src.utils.my_maths import euclidean_distance
 
 

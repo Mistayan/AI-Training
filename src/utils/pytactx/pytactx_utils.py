@@ -1,16 +1,12 @@
-import copy
 import logging
-from abc import ABC, abstractmethod
-from time import sleep, time
-from typing import Tuple, Dict
+from time import sleep
+from typing import Tuple, Dict, List
 
 import math
 
-from pytactx import env
 from pytactx.agent import Agent
 from pytactx.pyanalytx.logger import warning
-from src.utils.orientation import Orientation
-from src.utils.state_machine import StateMachine, BaseStateEnum
+from src.utils.pytactx.orientation import Orientation
 
 
 class WrongArenaRunnerException(Exception):
@@ -27,7 +23,9 @@ class WrongArenaRunnerException(Exception):
         super().__init__(*args)
 
 
-def get_city_tuple(__next_action, __cities) -> tuple[str, int, int]:
+
+def get_city_tuple(__next_action: str, __cities: List[Tuple]) -> tuple[str, int, int]:
+    """ Get the city Tuple having for name __next_action """
     for city, x, y in __cities:
         if city == __next_action:
             return city, x, y
@@ -79,70 +77,6 @@ def cities_from_game_dict(game_dict: Dict, first_is_last=False, return_to_first=
         _cities.append(_cities[0])
     return _cities
 
-
-class StateAgent(Agent, ABC):
-    """
-    An Agent having a StateMachine to control the behaviors.
-
-    This way, it is easier to maintain each state and their transitions.
-
-    It will also be more maintainable, since you will want to improve your bot's capabilities.
-    """
-
-    def __init__(self, id: str):
-        self.__log = logging.getLogger(self.__class__.__name__)
-        self.__log.info("Connecting ...")
-        super().__init__(id or env.ROBOTID,
-                         env.ARENA,
-                         env.USERNAME,
-                         env.PASSWORD,
-                         env.BROKERADDRESS,
-                         env.BROKERPORT,
-                         env.VERBOSITY)
-        self.__log.info("OK")
-        self.__state_machine: StateMachine = None
-
-    def set_state_machine(self, state_machine: StateMachine):
-        self.__log.debug("Setting state Machine")
-        if state_machine:
-            if not isinstance(state_machine, StateMachine):
-                raise ValueError("state_machine must be a StateMachine")
-            self.__state_machine = state_machine
-            state_machine.set_context(self)
-
-    def unstuck(self, state: BaseStateEnum):
-        self.__log.debug("Setting state Machine")
-        self.__state_machine.set_actual_state(state.value)
-        self._handle_loop()
-
-    def _handle_loop(self):
-        self.__state_machine.handle()
-
-
-class TargetAgent(StateAgent, ABC):
-    def __init__(self, id: str = None, *args, **kwargs):
-        self.__current_target: Tuple[str, int, int] = None
-        self.__visited = {}
-        super().__init__(id)
-
-    @property
-    def current_target(self) -> Tuple[str, int, int]:
-        return copy.deepcopy(self.__current_target)
-
-    def set_target(self, target: Tuple[str, int, int]):
-        if target and target != self.__current_target:
-            print(f"Setting target {target}")
-            self.__current_target = target
-
-    def add_visited(self, name: str):
-        self.__visited.setdefault(name, time() - self.game.get("t", 0))
-
-    @property
-    @abstractmethod
-    def next_action(self):
-        ...
-
-
 def get_orientation_form_coord_deltas(x, y, wanted_x, wanted_y) -> Orientation:
     """
     Calculate the precise orientation based on the coordinate deltas.
@@ -170,4 +104,3 @@ def get_orientation_form_coord_deltas(x, y, wanted_x, wanted_y) -> Orientation:
     # Normalize angle to 0-360 range. Add 90 degrees clockwise, since x,y=0 is on top left corner, not bottom left
     angle = (angle + 360 + 90) % 360
     return Orientation.from_angle(angle)
-

@@ -6,7 +6,7 @@ from gymnasium.envs.toy_text.blackjack import cmp
 from pytactx import Agent
 from src.bot_de_combat.behavior.Behavior import Behavior
 from src.bot_de_combat.behavior.BehaviorV2 import Patrol
-from src.utils.orientation import Orientation
+from src.utils.pytactx.orientation import Orientation
 
 """
 tous les bots de la map sont contenus dans un dict.

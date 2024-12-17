@@ -4,8 +4,8 @@ import logging
 from time import sleep
 from typing import Tuple
 from pytactx import env
-from src.bot_de_course.state_machine_config import RunnerStateEnum
-from src.utils.pytactx_utils import TargetAgent, wait_connection, WrongArenaRunnerException, cities_from_game_dict, \
+from src.utils.pytactx.generic_agents import TargetAgent
+from src.utils.pytactx.pytactx_utils import wait_connection, WrongArenaRunnerException, cities_from_game_dict, \
     get_city_tuple
 from src.utils.algo.ISolver import ISolver
 
@@ -35,7 +35,7 @@ class RunnerAgent(TargetAgent):
         super().__init__(myId, args=args, kwargs=kwargs)
         self.__init_arena()
         if not self._cities:
-            raise WrongArenaRunnerException("The current Arena don't have cities in game dict", env.ARENA)
+            raise WrongArenaRunnerException("The current Arena doesn't have cities in game dict", env.ARENA)
         self.__start_from = self.game.get(self._cities[0][0])
 
     # ================================= PRIVATE METHODS ================================= #
@@ -52,7 +52,7 @@ class RunnerAgent(TargetAgent):
         # Path : contains the cities names to go to (ordered path to travel)
         self._path: list[str] = [n for n, x, y in self._cities]
         # Set initial target to first element in the path.
-        if not self.current_target:
+        if self.current_target is None:
             self.set_target(get_city_tuple(self._path[0], self._cities))
         self.__run = True
         self.__show_log = True
@@ -82,12 +82,12 @@ class RunnerAgent(TargetAgent):
         if not self._path:
             self.init_path()
         self.__run = True
+        self._loop()
+
+    def _loop(self):
         px, py = 0, 0
-        # stuck prevention : If we start on START, unstuck.
-        n, x, y = self.current_target
-        if self.lastChecked in (None, "") and (x, y) == (self.x, self.y):
-            self.unstuck(RunnerStateEnum.UNSTUCK)
-        while self.life > 0 and self.__run:
+
+        while self.life > 0 and self.__run and self.isConnectedToArena():
             if px != self.x and py != self.y:
                 self.__log.debug(f"Position changed : x : {self.x} // y : {self.y}")
             self._handle_loop()  # This is where your can modify stuff to change behavior.
@@ -102,7 +102,6 @@ class RunnerAgent(TargetAgent):
         Renvoi la prochaine action à effectuer dans la liste self._path"""
 
         if not hasattr(self, '_path_iter'):
-            same_action_counter = 0
             self.__log.debug(f"Initiating paths to follow {self._path}")
             self.__start_from = self._path[0]
             self._path_iter = iter(self._path)

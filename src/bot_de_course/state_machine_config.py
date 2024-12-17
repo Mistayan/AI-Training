@@ -1,5 +1,6 @@
-from src.utils.orientation import Orientation
-from src.utils.pytactx_utils import get_orientation_form_coord_deltas, TargetAgent
+from src.utils.pytactx.orientation import Orientation
+from src.utils.pytactx.generic_agents import TargetAgent
+from src.utils.pytactx.pytactx_utils import get_orientation_form_coord_deltas
 from src.utils.state_machine import BaseStateEnum, AbcState
 
 

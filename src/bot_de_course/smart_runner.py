@@ -6,7 +6,7 @@ from src.bot_de_course.runner_agent import RunnerAgent
 from src.bot_de_course.state_machine_config import RunnerStateEnum
 from src.utils.algo.ISolver import ISolver
 from src.utils.algo.tsp.tsp_hamilton import HamiltonianSolver
-from src.utils.pytactx_utils import get_city_tuple
+from src.utils.pytactx.pytactx_utils import get_city_tuple
 from src.utils.state_machine import EasyStateMachine
 
 
