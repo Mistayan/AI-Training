@@ -1,5 +1,4 @@
 import itertools
-import logging
 from typing import Dict, Iterable, Any
 from typing import List, Tuple
 
@@ -56,7 +55,6 @@ def explore(city: str, remaining_cities: List[str], path: List = None) -> Tuple[
     return tuple((first, *tuple(possibility)) for possibility in iter_path)
 
 
-
 def path_distance(cities, distances: Dict, current_path: List[int], start_index: int):
     dist = 0
     for i in range(len(cities) - 1):
@@ -100,8 +98,8 @@ def get_city_pairs_distances(cities: List[Tuple[str, int, int]]):
 
 if __name__ == '__main__':
     from src.utils.generation import random_cities
+    from src.utils.algo.tsp.tsp_hamilton import HamiltonianSolver
 
     cities = random_cities(20, 30)
-    display_path_on_map(cities, 30, [])
-    # self._log.info(iter_paths)
-    # SVM
+    path, distance = HamiltonianSolver(cities).solve(back_to_start=True)
+    display_path_on_map(cities, 30, path)
