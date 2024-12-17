@@ -130,8 +130,9 @@ class TargetAgent(StateAgent, ABC):
         return copy.deepcopy(self.__current_target)
 
     def set_target(self, target: Tuple[str, int, int]):
-        print(f"Setting target {target}")
-        self.__current_target = target
+        if target and target != self.__current_target:
+            print(f"Setting target {target}")
+            self.__current_target = target
 
     def add_visited(self, name: str):
         self.__visited.setdefault(name, time() - self.game.get("t", 0))

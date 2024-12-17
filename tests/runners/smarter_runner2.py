@@ -10,4 +10,5 @@ if __name__ == '__main__':
     name = "Mapper"
     coloredlogs.install(logging.DEBUG)
     smart = SmartRunner(f"{name}-{random.randint(0, 42)}")
-    smart.go(TSPMap)
+    smart.init_path(TSPMap)
+    smart.go()

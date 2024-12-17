@@ -10,5 +10,5 @@ if __name__ == '__main__':
     name = "BaseTSP"
     coloredlogs.install(logging.DEBUG, propagate=False)
     smart = SmartRunner(f"{name}-{random.randint(0, 42)}")
-    print(smart.jeu["dests"])
-    smart.go(TSP)
+    smart.init_path(TSP)
+    smart.go()
