@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from random import randint
 
-from src.bot.behavior.Behavior import COLORS, Behavior
-from src.bot.utils import Orientation
+from src.bot_de_combat.behavior.Behavior import COLORS, Behavior
+from src.utils.algo.Dijkstra import PathFinder
 
-from src.utils.algo.Djirska import PathFinder
+from src.utils.orientation import Orientation
 
 
 class Patrol(Behavior):
