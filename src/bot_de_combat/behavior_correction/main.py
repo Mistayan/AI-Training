@@ -4,8 +4,11 @@ from enum import Enum
 import networkx as nx
 
 import pytactx
-from src.evaluation.bots import BotSerializer, Bot
-from src.evaluation.fsm import StateMachine, State
+from pytactx import env
+from pytactx.agent import AgentFr
+from src.bot_de_combat.Guard import Bot
+from src.bot_de_combat.behavior_correction.eval import BotSerializer
+from src.bot_de_combat.behavior_correction.exemple_state_machine import State, StateMachine
 
 """
 classDiagram
@@ -137,7 +140,7 @@ class FollowState(BaseState):
             self.switch_state(StateEnum.SMART.value)
 
 
-class StateMachineAgent(pytactx.Agent):
+class StateMachineAgent(AgentFr):
     def __init__(self, myId):
         # create state machine
         self.__state_machine = StateMachine()  # register all states depending on pytactx context
@@ -147,14 +150,14 @@ class StateMachineAgent(pytactx.Agent):
         # set the initial state depending on pytactx context
         self.__state_machine.set_actual_state(StateEnum.SMART.value)
         # finally the super init
-        _pwd = input('pass ? ')
-        super().__init__(id=myId,
-                         username="demo",
-                         password=_pwd,
-                         arena="demo",
-                         server="mqtt.jusdeliens.com",
+        super().__init__(id=myId or env.ROBOTID,
+                         username=env.USERNAME,
+                         password=env.PASSWORD,
+                         arena=env.ARENA,
+                         server=env.BROKERADDRESS,
+                         port=env.BROKERPORT,
                          prompt=False,
-                         verbose=False)
+                         verbose=env.VERBOSITY)
         self.__set_context_from_game()
 
     def __set_context_from_game(self):

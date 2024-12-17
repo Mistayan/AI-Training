@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from gymnasium.envs.toy_text.blackjack import cmp
 
-
-from pytactx import Agent
+from pytactx.agent import AgentFr
 from src.bot_de_combat.behavior.Behavior import Behavior
 from src.bot_de_combat.behavior.BehaviorV2 import Patrol
 from src.utils.pytactx.orientation import Orientation
@@ -27,9 +26,9 @@ implémenter un algo IA qui nous permet de choisir la prochaine cible
 """
 
 
-class Bot(Agent):
+class Bot(AgentFr):
     def __init__(self, name: str = None, default_behavior=None, initial_target: str = None):
-        super().__init__(id=name)
+        super().__init__(nom=name)
         self.__go = False
         self.__agent = self
         self.path = [(self.__agent.x + 3, self.__agent.y + 3),

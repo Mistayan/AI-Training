@@ -1,5 +1,11 @@
 import os
+from enum import Enum
 
+
+class OsType(Enum):
+    WIN= "win"
+    LINUX="unix"
+    IOS="darwin"
 
 def gen_file(filename: str, save_dir="plots"):
     "facet_plot.png"
