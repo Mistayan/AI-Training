@@ -3,9 +3,9 @@ from enum import Enum
 
 import networkx as nx
 
-import fsm
 import pytactx
 from src.evaluation.bots import BotSerializer, Bot
+from src.evaluation.fsm import StateMachine, State
 
 """
 classDiagram
@@ -77,7 +77,7 @@ class StateEnum(Enum):
     FOLLOW = 1  # "FollowState"
 
 
-class BaseState(fsm.State):
+class BaseState(State):
     def __init__(self, agent, color):
         self._agent = agent
         self.__color = color
@@ -140,7 +140,7 @@ class FollowState(BaseState):
 class StateMachineAgent(pytactx.Agent):
     def __init__(self, myId):
         # create state machine
-        self.__state_machine = fsm.StateMachine()  # register all states depending on pytactx context
+        self.__state_machine = StateMachine()  # register all states depending on pytactx context
         # it uses append(), the order matter
         self.__state_machine.add_state(DecisionState(self))
         self.__state_machine.add_state(FollowState(self))
