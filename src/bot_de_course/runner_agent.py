@@ -15,7 +15,7 @@ class RunnerAgent(TargetAgent):
     The agent holding possible states and context parameters
     """
 
-    def __init__(self, myId: str = None, *args, **kwargs):
+    def __init__(self, myId: str = None):
         """
         :param myId: the name of your bot in arena (if not set in .env, or to override it)
         :param solver: the solver you made to complete TSP
@@ -32,7 +32,7 @@ class RunnerAgent(TargetAgent):
         self._path = []
         self._visited = []
         self.__show_log = env.VERBOSITY >= 3
-        super().__init__(myId, args=args, kwargs=kwargs)
+        super().__init__(myId)
         self.__init_arena()
         if not self._cities:
             raise WrongArenaRunnerException("The current Arena doesn't have cities in game dict", env.ARENA)
@@ -58,9 +58,18 @@ class RunnerAgent(TargetAgent):
         self.__show_log = True
 
     # ================================= PROTECTED METHODS ================================= #
-    # @measure_perf
-    def _handle_loop(self):
-        super()._handle_loop()
+
+    def _loop(self):
+        px, py = 0, 0
+
+        while self.life > 0 and self.__run and self.isConnectedToArena():
+            if px != self.x and py != self.y:
+                self.__log.debug(f"Position changed : x : {self.x} // y : {self.y}")
+            self._handle_loop()  # This is where your can modify stuff to change behavior.
+            self.update(True)
+            px, py = self.x, self.y
+
+            sleep(.3)
 
     # ================================= PUBLIC METHODS ================================= #
 
@@ -82,19 +91,7 @@ class RunnerAgent(TargetAgent):
         if not self._path:
             self.init_path()
         self.__run = True
-        self._loop()
-
-    def _loop(self):
-        px, py = 0, 0
-
-        while self.life > 0 and self.__run and self.isConnectedToArena():
-            if px != self.x and py != self.y:
-                self.__log.debug(f"Position changed : x : {self.x} // y : {self.y}")
-            self._handle_loop()  # This is where your can modify stuff to change behavior.
-            self.update(True)
-            px, py = self.x, self.y
-
-            sleep(.3)
+        self._loop() # Edit this method to configure your Agent's Behavior
 
     @property
     def next_action(self) -> tuple[str, int, int]:

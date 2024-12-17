@@ -11,9 +11,9 @@ from src.utils.state_machine import EasyStateMachine
 
 
 class SmartRunner(RunnerAgent):
-    def __init__(self, myId: str = None, *args, **kwargs):
+    def __init__(self, myId: str = None):
         print("init Smart Runner")
-        super().__init__(myId, args=args, kwargs=kwargs)
+        super().__init__(myId)
         self.__log = logging.getLogger(self.__class__.__name__)
         self.__log.addHandler(logging.NullHandler())
         self._dist = float('inf')

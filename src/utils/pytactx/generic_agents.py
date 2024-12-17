@@ -53,7 +53,7 @@ class TargetAgent(StateAgent, ABC):
     Use this class for TSP, Labyrinths, moving to specified coordinates
     """
 
-    def __init__(self, id: str = None, *args, **kwargs):
+    def __init__(self, id: str = None):
         self.__current_target: Tuple[str, int, int] = None
         self.__visited = {}
         super().__init__(id)
