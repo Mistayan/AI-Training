@@ -1,0 +1,15 @@
+networks:
+  public:
+    driver: bridge
+
+services:
+  runner:
+    container_name: runner
+    build:
+      dockerfile: ./race.Dockerfile
+    networks:
+      - public
+    volumes:
+      - .env:/home/app/.env
+    environment:
+      - LOGGING_LEVEL=DEBUG
