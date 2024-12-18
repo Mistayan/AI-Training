@@ -3,8 +3,8 @@ import sys
 from subprocess import Popen
 from time import sleep
 
-from src.bot.Guard import Bot
-from src.bot.behavior.Behavior import Assist
+from src.bot_de_combat.Guard import Bot
+from src.bot_de_combat.behavior.Behavior import Assist
 
 NB_BOTS = 3
 configs = {
@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     running = []
     for i in range(NB_BOTS):
-        running.append(Popen(f"C:/tmp/cours/IA/venv/Scripts/python.exe run_pytactx_bot.py {i}".split()))
+        running.append(Popen(f"python run_pytactx_bot.py {i}".split()))
 
     try:
         for process in running:
