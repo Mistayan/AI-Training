@@ -2,7 +2,7 @@ import copy
 import logging
 from abc import ABC, abstractmethod
 from time import time
-from typing import Tuple
+from typing import Tuple, Any
 
 from pytactx import env
 from pytactx.agent import Agent
@@ -80,7 +80,7 @@ class TargetAgent(StateAgent, ABC):
 
     @property
     @abstractmethod
-    def next_action(self):
+    def next_action(self) -> Any:
         """
         Define your method to select the next action to be performed
         Save the result in your customized class
