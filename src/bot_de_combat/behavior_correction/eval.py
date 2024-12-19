@@ -1,3 +1,15 @@
+class DummyBot:
+    """
+    DummyBot is a simplified representation (Serialization) of a `Bot` `Arena`
+    It holds these properties : name, distance, vie, ammo
+    """
+    def __init__(self, name: str, distance: int, life: int, ammo: int):
+        self.name = name
+        self.distance = distance
+        self.life = life
+        self.ammo = ammo
+
+
 class BotSerializer:
     """
      Instanciate ennemies as 'dummy' bots (no action possible)
@@ -10,31 +22,30 @@ class BotSerializer:
          """
         self.__bots = []
         for name in voisins:
-            self.__bots.append(Bot(name, voisins[name]))
+            self.__bots.append(Enemy(name, voisins[name]))
 
     def __iter__(self):
         return iter(self.__bots)
 
 
-class Bot:
+class Enemy(DummyBot):
     """
+    Advanced representation (Serialisation) of a DummyBot, holding additional properties to be used:
+    x: the x position of the bot in the `Arena`
+    y: the y position of the bot in the `Arena`
+    fire: is the Enemy firing right now ? (occupied)
+    fear_factor: how fearful should we be of that enemy ?
+
      {name: "Name",
     {'x': 6, 'y': 5, 'dir': range(1, 4), 'ammo': range(0, 100), 'life': range(0, 100), 'fire': bool, 'd': int}}
         """
 
     def __init__(self, name: str, player_dict: dict):
-        self.name = name
-        self.vie = player_dict.get('life')
+        super().__init__(name, player_dict.get('d'), player_dict.get('life'), player_dict.get('ammo'))
         self.x = player_dict.get('x')
         self.y = player_dict.get('y')
-        # self.coords = (self.x, self.y)
-        self.ammo = player_dict.get('ammo')
         self.fire = player_dict.get('fire')
-        self.distance = player_dict.get('d')  # without obstacles, OK
-        self.fear_factor = float('1.0')
-
-    def __set_score(self, fear_factor: float):
-        self.fear_factor = fear_factor
+        self.fear_factor = float('1.0') # default value : strong fear, avoid
 
 
 ######################################
@@ -42,29 +53,21 @@ class Bot:
 
 def smart_eval(our_bot, ref_bot):
     """ Evaluate the fear_factor for each bot"""
-    # ecreases if bot is far away:
+    # decreases if bot is far away:
     # We may encounter random events that could harm us
     dist_factor = 1 / ref_bot.distance * our_bot.DIST_PENALTY
 
     # penalize if bot has low life
-    life_factor = (ref_bot.vie / 100) * our_bot.LIFE_PENALTY
+    life_factor = (ref_bot.life / 100) * our_bot.LIFE_PENALTY
 
     # penalize if bot has low ammo
     ammo_factor = (ref_bot.ammo / 100) * our_bot.AMMO_PENALTY
 
-    fear_factor = ((our_bot.ammo / 100) * ammo_factor + (our_bot.vie / 100) * life_factor + dist_factor) / 3
+    fear_factor = ((our_bot.ammo / 100) * ammo_factor + (our_bot.life / 100) * life_factor + dist_factor) / 3
     return fear_factor / 8  # After observations, max factor is 8  #TODO find a better way...
 
 
 if __name__ == "__main__":
-    class DummyBot:
-        def __init__(self, name: str, distance: int, vie: int, ammo: int):
-            self.name = name
-            self.distance = distance
-            self.vie = vie
-            self.ammo = ammo
-
-
     class DummyAgent(DummyBot):
         def __init__(self, name: str, vie: int, ammo: int):
             super().__init__(name, 0, vie, ammo)

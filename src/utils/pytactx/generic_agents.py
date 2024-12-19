@@ -6,7 +6,7 @@ from typing import Tuple, Any
 
 from pytactx import env
 from pytactx.agent import Agent
-from src.utils.state_machine import StateMachine, BaseStateEnum
+from src.utils.state_machine import BaseStateEnum, StateMachine
 
 
 class StateAgent(Agent, ABC):
@@ -19,6 +19,16 @@ class StateAgent(Agent, ABC):
     """
 
     def __init__(self, id: str):
+        """
+        Initialise the Agent and connect to the server.
+        Then, prepare the property __state_machine, that will hold the StateMachine, controlling the Agent's behaviors.
+
+        Do not forget to use `set_state_machine(StateMachine)` for it to work !
+
+        Args:
+            (optional) id: the name of the agent in the arena's ACLs
+                            should be defined in .env file. But this is a simple way to override it.
+        """
         self.__log = logging.getLogger(self.__class__.__name__)
         self.__log.info("Connecting ...")
         super().__init__(id or env.ROBOTID,
@@ -32,6 +42,12 @@ class StateAgent(Agent, ABC):
         self.__state_machine: StateMachine = None
 
     def set_state_machine(self, state_machine: StateMachine):
+        """
+        Defines the StateMachine that will be used control the Agent's behaviors.
+        This StateMachine must be initialised with an initial state, and some behaviors (States) implementations.
+
+        Initialises the context for the state machine. ( it will be passed to states, using handle() method )
+        """
         if not state_machine or not isinstance(state_machine, StateMachine):
             raise ValueError("state_machine must be a StateMachine")
         self.__log.debug("Setting state Machine")
@@ -39,11 +55,17 @@ class StateAgent(Agent, ABC):
         state_machine.set_context(self)
 
     def force_state(self, state: BaseStateEnum):
+        """
+        Sets the specified state of the state machine. This method updates the current
+        state of the state machine to the provided state and invokes the handler loop
+        after the transition, ensuring the requested action immediately executes.
+        """
         self.__log.debug("Setting state Machine")
         self.__state_machine.set_actual_state(state.value)
         self._handle_loop()
 
     def _handle_loop(self):
+        """ Signals the state machine to handle its current state to perform its action """
         self.__state_machine.handle()
 
 

@@ -133,7 +133,7 @@ class Pursuit(Behavior):
         else:
             self._bot.orienter_vers_ennemi_plus_proche()
             not self._bot.a_portee_de_tir(self._bot.target) and self._bot.avancer()
-        if self._bot.vie <= 20:
+        if self._bot.life <= 20:
             self.change_state(Flee)
         # if 90 >= self._bot.vie > 50:
         #     self.switzzer_strat()
