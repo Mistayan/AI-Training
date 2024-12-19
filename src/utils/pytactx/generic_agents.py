@@ -54,19 +54,13 @@ class StateAgent(Agent, ABC):
         self.__state_machine = state_machine
         state_machine.set_context(self)
 
-    def force_state(self, state: BaseStateEnum):
+    # @measure_perf
+    def _onUpdated(self, *args, **kwargs):
+        """ Every time self.update() is used !
+        Signals the state machine to handle its current state to perform its action
         """
-        Sets the specified state of the state machine. This method updates the current
-        state of the state machine to the provided state and invokes the handler loop
-        after the transition, ensuring the requested action immediately executes.
-        """
-        self.__log.debug("Setting state Machine")
-        self.__state_machine.set_actual_state(state.value)
-        self._handle_loop()
-
-    def _handle_loop(self):
-        """ Signals the state machine to handle its current state to perform its action """
         self.__state_machine.handle()
+        super()._onUpdated(*args, **kwargs)
 
 
 class TargetAgent(StateAgent, ABC):
@@ -76,9 +70,10 @@ class TargetAgent(StateAgent, ABC):
     """
 
     def __init__(self, id: str = None):
+        self.__log = logging.getLogger(self.__class__.__name__)
+        super().__init__(id)
         self.__current_target: Tuple[str, int, int] = None
         self.__visited = {}
-        super().__init__(id)
 
     @property
     def current_target(self) -> Tuple[str, int, int]:
@@ -93,12 +88,12 @@ class TargetAgent(StateAgent, ABC):
         """
 
         if target and target != self.__current_target:
-            print(f"Setting target {target}")
+            self.__log.debug(f"Setting target to {target}")
             self.__current_target = target
 
     def add_visited(self, name: str):
         """ Once visited, save the city for future use """
-        self.__visited.setdefault(name, time() - self.game.get("t", 0))
+        self.__visited.setdefault(name, time())
 
     @property
     @abstractmethod
@@ -108,4 +103,3 @@ class TargetAgent(StateAgent, ABC):
         Save the result in your customized class
         """
         ...
-

@@ -59,17 +59,10 @@ class RunnerAgent(TargetAgent):
 
     # ================================= PROTECTED METHODS ================================= #
 
-    def _loop(self):
-        px, py = 0, 0
-
+    def __loop(self):
         while self.life > 0 and self.__run and self.isConnectedToArena():
-            if px != self.x and py != self.y:
-                self.__log.debug(f"Position changed : x : {self.x} // y : {self.y}")
-            self._handle_loop()  # This is where your can modify stuff to change behavior.
-            self.update(True)
-            px, py = self.x, self.y
-
-            sleep(.3)
+            self.update(False)
+            sleep(0.1)
 
     # ================================= PUBLIC METHODS ================================= #
 
@@ -80,7 +73,8 @@ class RunnerAgent(TargetAgent):
             self.__log.info(f"Done loading paths\nRunning in order: {self._path}")
 
         if not self.current_target:
-            self.set_target(self._cities[0])
+            self.set_target(get_city_tuple(self._path[0], self._cities))
+
         self.__log.debug(f"moving towards {self.current_target}")
 
     def go(self):
@@ -91,7 +85,7 @@ class RunnerAgent(TargetAgent):
         if not self._path:
             self.init_path()
         self.__run = True
-        self._loop() # Edit this method to configure your Agent's Behavior
+        self.__loop() # Edit States in the StateMachine to configure your Agent's Behavior
 
     @property
     def next_action(self) -> tuple[str, int, int]:

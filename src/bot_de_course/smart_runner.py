@@ -16,13 +16,15 @@ class SmartRunner(RunnerAgent):
         super().__init__(myId)
         self.__log = logging.getLogger(self.__class__.__name__)
         self.__log.addHandler(logging.NullHandler())
-        self._dist = float('inf')
 
     @override
     def init_path(self, solver: ISolver.__class__ = None):
         self.__log.info(f"Using solver : {solver.__name__}")
         self._solver = solver or self._solver
         self._path, dist = solver(cities=self._cities).solve(start_index=0, back_to_start=True, visited=self._visited)
+        if hasattr(self, '_path_iter'):
+            self.__log.warning("Path changed, resetting iterator")
+            self._path_iter = iter(self._path)
         self.set_target(get_city_tuple(self._path[0], self._cities)) # init path smart
         self.__log.info(f"Done processing paths\nFastest found: {self._path} with a total distance of {dist}")
 
@@ -30,7 +32,7 @@ class SmartRunner(RunnerAgent):
 if __name__ == '__main__':
     import coloredlogs
 
-    coloredlogs.install(logging.DEBUG, propagate=False)
+    coloredlogs.install(logging.INFO, propagate=False)
     agent = SmartRunner()
     agent.init_path(solver=HamiltonianSolver)
     agent_state_machine = EasyStateMachine(initial_state=RunnerStateEnum.ORIENTATE,
