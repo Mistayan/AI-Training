@@ -4,6 +4,7 @@ from typing import Tuple, Dict, List
 
 import math
 
+from pytactx import env
 from pytactx.agent import Agent
 from pytactx.pyanalytx.logger import warning
 from src.utils.pytactx.orientation import Orientation
@@ -23,6 +24,16 @@ class WrongArenaRunnerException(Exception):
         super().__init__(*args)
 
 
+def get_logging_level():
+    logging_level = 0
+    match env.VERBOSITY:
+        case 1: logging_level = logging.ERROR
+        case 2: logging_level = logging.WARNING
+        case 3: logging_level = logging.INFO
+        case 4: logging_level = logging.DEBUG
+    if logging_level == 0:
+        raise ValueError("Env value VERBOSITY must be between 1 and 4")
+    return logging_level
 
 def get_city_tuple(__next_action: str, __cities: List[Tuple]) -> tuple[str, int, int]:
     """ Get the city Tuple having for name __next_action """

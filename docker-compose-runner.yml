@@ -11,5 +11,3 @@ services:
       - public
     volumes:
       - .env:/home/app/.env
-    environment:
-      - LOGGING_LEVEL=DEBUG
