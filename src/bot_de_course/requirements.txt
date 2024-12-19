@@ -1,0 +1,12 @@
+pip
+wheel
+requests
+
+numpy>=1.24.2
+matplotlib>=3.7.0  # 3.6.3
+paho-mqtt>=1.6.1
+Pillow>=10.0.1
+networkx>=3.0
+coloredlogs>=15.0.1
+python-dotenv
+typing-extensions
