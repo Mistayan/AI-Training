@@ -5,8 +5,9 @@ networks:
 services:
   runner:
     container_name: runner
-    build:
-      dockerfile: ./race.Dockerfile
+    image: runner_agent:latest
+#    build:
+#      dockerfile: ./race.Dockerfile
     networks:
       - public
     volumes:

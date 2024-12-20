@@ -13,7 +13,7 @@ ADD src/bot_de_course/requirements.txt .
 RUN pip install -r requirements.txt; rm requirements.txt
 
 
-FROM install_requirements as copy_src
+FROM install_requirements as runner
 RUN mkdir src; mkdir src/bot_de_course
 ADD src/utils ./src/utils
 ADD src/bot_de_course/*.py ./src/bot_de_course
@@ -21,5 +21,5 @@ ADD race.py .
 ADD config.py .
 
 
-FROM copy_src as runner
+FROM runner as agent
 CMD ["python", "race.py"]
