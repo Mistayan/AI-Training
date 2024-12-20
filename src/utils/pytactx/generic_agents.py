@@ -1,7 +1,7 @@
 import copy
 import logging
 from abc import ABC, abstractmethod
-from time import time
+from time import time, sleep
 from typing import Tuple, Any
 
 from pytactx import env
@@ -9,13 +9,9 @@ from pytactx.agent import Agent
 from src.utils.state_machine import BaseStateEnum, StateMachine
 
 
-class StateAgent(Agent, ABC):
+class BaseAgent(Agent):
     """
-    An Agent having a StateMachine to control the behaviors.
-
-    This way, it is easier to maintain each state and their transitions.
-
-    It will also be more maintainable, since you will want to improve your bot's capabilities as you go.
+    An Agent connected to the arena
     """
 
     def __init__(self, id: str):
@@ -39,6 +35,48 @@ class StateAgent(Agent, ABC):
                          env.BROKERPORT,
                          env.VERBOSITY)
         self.__log.info("OK")
+
+    def _onUpdated(self, *args, **kwargs):
+        """ Every time self.update() is used !
+        Signals the state machine to handle its current state to perform its action
+        """
+        # add your code here !
+        self.lookAt((self.dir + 1) % 4) # exemple
+
+        # use super() at the end.
+        super()._onUpdated(*args, **kwargs)
+        # any code below might be overwritten on next loop
+
+    def go(self):
+        while self.life > 0 and self.isConnectedToArena():
+            self.update(False)
+            sleep(0.1)
+
+
+class StateAgent(BaseAgent, ABC):
+    """
+    An Agent having a StateMachine to control the behaviors.
+
+    This way, it is easier to maintain each state and their transitions.
+
+    It will also be more maintainable, since you will want to improve your bot's capabilities as you go.
+    """
+
+    def __init__(self, id: str):
+        """
+        Initialise the Agent and connect to the server.
+        Then, prepare the property __state_machine, that will hold the StateMachine, controlling the Agent's behaviors.
+
+        Do not forget to use `set_state_machine(StateMachine)` for it to work !
+
+        Args:
+            (optional) id: the name of the agent in the arena's ACLs
+                            should be defined in .env file. But this is a simple way to override it.
+        """
+        self.__log = logging.getLogger(self.__class__.__name__)
+        self.__log.info("Connecting ...")
+        super().__init__(id)
+        self.__log.info("OK")
         self.__state_machine: StateMachine = None
 
     def set_state_machine(self, state_machine: StateMachine):
@@ -60,7 +98,7 @@ class StateAgent(Agent, ABC):
         Signals the state machine to handle its current state to perform its action
         """
         self.__state_machine.handle()
-        super()._onUpdated(*args, **kwargs)
+        super(Agent)._onUpdated(*args, **kwargs)
 
 
 class TargetAgent(StateAgent, ABC):
