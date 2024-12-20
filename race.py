@@ -1,6 +1,3 @@
-import logging
-
-from pytactx import env
 from src.bot_de_course.smart_runner import SmartRunner
 from src.bot_de_course.state_machine_config import RunnerStateEnum
 from src.utils.algo.tsp.tsp_hamilton import HamiltonianSolver

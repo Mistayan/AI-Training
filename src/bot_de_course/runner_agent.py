@@ -85,7 +85,7 @@ class RunnerAgent(TargetAgent):
         if not self._path:
             self.init_path()
         self.__run = True
-        self.__loop() # Edit States in the StateMachine to configure your Agent's Behavior
+        super().go()
 
     @property
     def next_action(self) -> tuple[str, int, int]:

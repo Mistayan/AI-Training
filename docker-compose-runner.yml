@@ -5,7 +5,7 @@ networks:
 services:
   runner:
     container_name: runner
-    image: runner_agent:latest
+    image: mistayan/runner_agent:latest
 #    build:
 #      dockerfile: ./race.Dockerfile
     networks:
